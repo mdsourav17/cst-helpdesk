@@ -7,57 +7,32 @@ import {
 import {
   MessageSquare, ShieldCheck, Bell, Plus, Search, CheckCircle2, Clock,
   Heart, Trash2, Edit3, Image as ImageIcon, Video, Users, UserPlus,
-  Megaphone, LogOut, Lock, Radio, Calendar, ExternalLink, X, Check, Award, CornerDownRight, ThumbsUp, KeyRound, Mail, GraduationCap
+  Megaphone, LogOut, Lock, Radio, Calendar, ExternalLink, X, Check, Award, CornerDownRight, ThumbsUp, KeyRound, Mail, GraduationCap, ShieldAlert, Sun, Moon
 } from 'lucide-react';
 
-// EmailJS Configuration (এখানে তোমার রিয়েল আইডিগুলো বসিয়ে নাও)
 const EMAILJS_SERVICE_ID = 'service_cst-help26';
 const EMAILJS_TEMPLATE_ID = 'template_r965t04';
 const EMAILJS_PUBLIC_KEY = '_dvFgtl1UPcDlYxlb';
 
-// ডিপার্টমেন্টের মেম্বার লিস্ট (প্রাথমিক ডেটা)
 const DEFAULT_MEMBERS = {
   "253203": { name: "Sourov Islam", role: "admin", semester: "4th Semester", email: "sourov@gmail.com" },
   "272029": { name: "Sabina Murmu", role: "student", semester: "4th Semester", email: "sabina@gmail.com" },
   "272032": { name: "Irfan Ali", role: "student", semester: "4th Semester", email: "irfan@gmail.com" },
-  "272033": { name: "Arafat Muntasir", role: "student", semester: "4th Semester", email: "arafat@gmail.com" },
-  "272034": { name: "Murshida Khatun", role: "student", semester: "4th Semester", email: "murshida@gmail.com" },
-  "272035": { name: "Utsob Roy", role: "student", semester: "4th Semester", email: "utsob@gmail.com" },
-  "272036": { name: "Miftaul Jannat", role: "student", semester: "4th Semester", email: "miftaul@gmail.com" },
-  "272037": { name: "AL-Mahmud", role: "student", semester: "4th Semester", email: "almahmud@gmail.com" },
-  "201586": { name: "Rokaiya", role: "student", semester: "4th Semester", email: "rokaiya@gmail.com" },
-  "201587": { name: "Maruf Hossen", role: "student", semester: "4th Semester", email: "maruf@gmail.com" },
-  "201588": { name: "Siyam", role: "student", semester: "4th Semester", email: "siyam@gmail.com" },
-  "201589": { name: "Vubon Chandra", role: "student", semester: "4th Semester", email: "vubon@gmail.com" },
-  "201591": { name: "Afiya Farjana", role: "student", semester: "4th Semester", email: "afiya@gmail.com" },
-  "201592": { name: "Sourov Kumar", role: "student", semester: "4th Semester", email: "sourovk@gmail.com" },
-  "201594": { name: "Ashadujjaman", role: "student", semester: "4th Semester", email: "ashad@gmail.com" },
-  "201597": { name: "Tahira Jannat", role: "student", semester: "4th Semester", email: "tahira@gmail.com" },
-  "201598": { name: "Sohan Islam", role: "student", semester: "4th Semester", email: "sohan@gmail.com" },
-  "201599": { name: "Hobibor Rahman", role: "student", semester: "4th Semester", email: "hobibor@gmail.com" },
-  "201600": { name: "Nazmin Dola", role: "student", semester: "4th Semester", email: "nazmin@gmail.com" },
-  "201602": { name: "Sadid Ahmed", role: "student", semester: "4th Semester", email: "sadid@gmail.com" },
-  "201603": { name: "Ibna Abid", role: "student", semester: "4th Semester", email: "ibna@gmail.com" },
-  "201604": { name: "Abida Sultana", role: "student", semester: "4th Semester", email: "abida@gmail.com" },
-  "201605": { name: "Nurnobi", role: "student", semester: "4th Semester", email: "nurnobi@gmail.com" },
-  "201606": { name: "Shagor Islam", role: "student", semester: "4th Semester", email: "shagor@gmail.com" },
-  "201609": { name: "Muttza Masrafi", role: "student", semester: "4th Semester", email: "muttza@gmail.com" },
-  "201610": { name: "Komolika Roy", role: "student", semester: "4th Semester", email: "komolika@gmail.com" },
-  "201612": { name: "Rana", role: "student", semester: "4th Semester", email: "rana@gmail.com" },
-  "201614": { name: "Julekha Akter", role: "student", semester: "4th Semester", email: "julekha@gmail.com" },
-  "201615": { name: "Shanjida Akter", role: "student", semester: "4th Semester", email: "shanjida@gmail.com" },
-  "201616": { name: "Mostakim Islam Ratul", role: "student", semester: "4th Semester", email: "mostakim@gmail.com" },
-  "201618": { name: "Afrin Akter", role: "student", semester: "4th Semester", email: "afrin@gmail.com" },
-  "201619": { name: "Soreful Islam", role: "student", semester: "4th Semester", email: "soreful@gmail.com" },
-  "201621": { name: "Mobasshirina", role: "student", semester: "4th Semester", email: "mobasshirina@gmail.com" },
-  "201624": { name: "James Kumer Joy", role: "student", semester: "4th Semester", email: "james@gmail.com" },
-  "201625": { name: "Sador Chandra Roy", role: "student", semester: "4th Semester", email: "sador@gmail.com" },
-  "201627": { name: "Aziz Mohammed", role: "student", semester: "4th Semester", email: "aziz@gmail.com" },
-  "201629": { name: "Partho Sarker", role: "student", semester: "4th Semester", email: "partho@gmail.com" },
-  "201630": { name: "Masud Rana", role: "student", semester: "4th Semester", email: "masud@gmail.com" },
-  "201634": { name: "Anushka", role: "student", semester: "4th Semester", email: "anushka@gmail.com" },
-  "702763": { name: "Jahid", role: "student", semester: "4th Semester", email: "jahid@gmail.com" }
+  "201605": { name: "Nurnobi", role: "student", semester: "4th Semester", email: "nurnobi@gmail.com" }
 };
+
+const SEMESTERS_LIST = [
+  "ALL",
+  "1st Semester",
+  "2nd Semester",
+  "3rd Semester",
+  "4th Semester",
+  "5th Semester",
+  "6th Semester",
+  "7th Semester",
+  "8th Semester",
+  "TEACHERS"
+];
 
 const DAYS_OF_WEEK = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 const DAYS_BN = {
@@ -90,18 +65,21 @@ const compressImageFile = (file, maxDim = 750, quality = 0.65) => {
 
 export default function App() {
   useEffect(() => {
-    const isResetDone = localStorage.getItem('hd_fresh_start_v17');
+    const isResetDone = localStorage.getItem('hd_fresh_start_v24');
     if (!isResetDone) {
       localStorage.clear();
-      localStorage.setItem('hd_fresh_start_v17', 'true');
+      localStorage.setItem('hd_fresh_start_v24', 'true');
       window.location.reload();
     }
   }, []);
 
   const [currentUser, setCurrentUser] = useState(() => JSON.parse(localStorage.getItem('hd_verified_user') || 'null'));
   const [isAdminMode, setIsAdminMode] = useState(() => localStorage.getItem('hd_admin_mode') === 'true');
+  const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('hd_dark_mode') !== 'false');
   const [membersDirectory, setMembersDirectory] = useState(DEFAULT_MEMBERS);
   const [moderatorRolls, setModeratorRolls] = useState(["201605"]);
+
+  const [directorySemFilter, setDirectorySemFilter] = useState('ALL');
 
   // Auth States
   const [authStep, setAuthStep] = useState('verifyRoll');
@@ -113,15 +91,12 @@ export default function App() {
   const [authSuccessMsg, setAuthSuccessMsg] = useState('');
   const [pendingUser, setPendingUser] = useState(null);
   
-  // OTP / Pin Reset States
   const [generatedOtp, setGeneratedOtp] = useState('');
   const [inputOtp, setInputOtp] = useState('');
 
-  // Navigation & View
   const [activeTab, setActiveTab] = useState('feed');
   const [toast, setToast] = useState(null);
 
-  // Feed & Posts States
   const [posts, setPosts] = useState([]);
   const [notices, setNotices] = useState([]);
   const [notifications, setNotifications] = useState([]);
@@ -130,7 +105,6 @@ export default function App() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [semesterFilter, setSemesterFilter] = useState('ALL');
 
-  // Modals State
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showManageDirectory, setShowManageDirectory] = useState(false);
   const [showManageTeacherModal, setShowManageTeacherModal] = useState(false);
@@ -142,10 +116,8 @@ export default function App() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [lightboxImg, setLightboxImg] = useState(null);
 
-  // Notice Add Form Images (Max 3)
   const [noticeImages, setNoticeImages] = useState([]);
 
-  // Create Post Form
   const [postCategory, setPostCategory] = useState('Coding / Programming');
   const [postTitle, setPostTitle] = useState('');
   const [postDesc, setPostDesc] = useState('');
@@ -153,13 +125,11 @@ export default function App() {
   const [postImages, setPostImages] = useState([]);
   const [isSubmittingPost, setIsSubmittingPost] = useState(false);
 
-  // Comment, Reply & Reaction States
   const [commentTexts, setCommentTexts] = useState({});
   const [commentImagesMap, setCommentImagesMap] = useState({});
   const [replyTexts, setReplyTexts] = useState({});
   const [activeReplyBox, setActiveReplyBox] = useState(null);
 
-  // Live Support & Routine States
   const [routineList, setRoutineList] = useState([]);
   const [supportConfig, setSupportConfig] = useState({ meetLink: '', forceStatus: 'auto' });
   const [supportQueue, setSupportQueue] = useState([]);
@@ -167,27 +137,22 @@ export default function App() {
   const [supportTopic, setSupportTopic] = useState('Coding / Lab Problem');
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Routine Add Form States
   const [rDay, setRDay] = useState('Saturday');
   const [rTitle, setRTitle] = useState('Evening Support Session');
   const [rStart, setRStart] = useState('16:00');
   const [rEnd, setREnd] = useState('18:00');
 
-  // Directory Add / Edit Form (Student)
   const [newMemberId, setNewMemberId] = useState('');
   const [newMemberName, setNewMemberName] = useState('');
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [newMemberSem, setNewMemberSem] = useState('4th Semester');
 
-  // Teacher / CI Add Form
   const [teacherId, setTeacherId] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
   const [teacherRoleType, setTeacherRoleType] = useState('teacher');
 
-  // Moderator Management Form
   const [modInputRoll, setModInputRoll] = useState('');
-
   const logoTapRef = useRef({ count: 0, timer: null });
 
   const showToastMsg = (msg, type = 'success') => {
@@ -271,7 +236,15 @@ export default function App() {
   const userInfo = currentUser ? (membersDirectory[currentUser.roll] || currentUser) : null;
   const isMainAdmin = currentUser?.roll === "253203" && isAdminMode;
   const isModerator = currentUser && moderatorRolls.includes(currentUser.roll);
+  
+  // স্টাফ পাওয়ার: শুধুমাত্র অ্যাডমিন অথবা মডারেটর হলেই সত্য হবে
   const hasStaffPower = isMainAdmin || isModerator;
+
+  const toggleTheme = () => {
+    const nextState = !isDarkMode;
+    setIsDarkMode(nextState);
+    localStorage.setItem('hd_dark_mode', nextState ? 'true' : 'false');
+  };
 
   const checkLiveSupportStatus = () => {
     if (supportConfig.forceStatus === 'open') {
@@ -303,7 +276,6 @@ export default function App() {
 
   const liveStatus = checkLiveSupportStatus();
 
-  // --- AUTH LOGIC (Flexible Gmail Match) ---
   const handleVerifyRoll = async (e) => {
     e.preventDefault();
     setAuthError('');
@@ -321,23 +293,32 @@ export default function App() {
       const userDocRef = doc(db, 'helpdesk_users', cleanId);
       const userSnap = await getDoc(userDocRef);
 
-      if (userSnap.exists() && userSnap.data().pin) {
-        const userPayload = { ...userSnap.data(), roll: cleanId, email: cleanEmail };
-        await setDoc(userDocRef, { email: cleanEmail }, { merge: true });
-        setPendingUser(userPayload);
-        setAuthStep('loginPin');
-      } else {
-        const userPayload = {
-          roll: cleanId,
-          name: member.name,
-          role: member.role || 'student',
-          semester: member.semester || '4th Semester',
-          email: cleanEmail
-        };
-        await setDoc(userDocRef, userPayload, { merge: true });
-        setPendingUser(userPayload);
-        setAuthStep('createPin');
+      if (userSnap.exists()) {
+        const existingData = userSnap.data();
+        if (existingData.email && existingData.email.toLowerCase() !== cleanEmail) {
+          setAuthError('সিকিউরিটি অ্যালার্ট: এই রোলের জন্য পূর্বে অন্য জিমেইল রেজিস্টার্ড করা আছে। শুধুমাত্র সেই একই জিমেইল দিয়ে প্রবেশ করতে পারবেন!');
+          return;
+        }
+
+        if (existingData.pin) {
+          const userPayload = { ...existingData, roll: cleanId, email: cleanEmail };
+          setPendingUser(userPayload);
+          setAuthStep('loginPin');
+          return;
+        }
       }
+
+      const userPayload = {
+        roll: cleanId,
+        name: member.name,
+        role: member.role || 'student',
+        semester: member.semester || '4th Semester',
+        email: cleanEmail
+      };
+      await setDoc(userDocRef, userPayload, { merge: true });
+      setPendingUser(userPayload);
+      setAuthStep('createPin');
+
     } catch (err) {
       setAuthError('কানেকশন সমস্যা হয়েছে। আবার চেষ্টা করুন।');
     }
@@ -359,11 +340,16 @@ export default function App() {
         return;
       }
 
+      const existingData = userSnap.data();
+      if (existingData.email && existingData.email.toLowerCase() !== cleanEmail) {
+        setAuthError('সিকিউরিটি অ্যালার্ট: এই রোলে রেজিস্টার্ড জিমেইলের সাথে আপনার দেওয়া জিমেইল মিলছে না!');
+        return;
+      }
+
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       setGeneratedOtp(otp);
-      setPendingUser({ ...userSnap.data(), roll: cleanId, email: cleanEmail });
+      setPendingUser({ ...existingData, roll: cleanId, email: cleanEmail });
       
-      // EmailJS দিয়ে রিয়েল জিমেইলে ওটিপি পাঠানোর রিকোয়েস্ট
       const templateParams = {
         to_email: cleanEmail,
         otp_code: otp,
@@ -371,13 +357,10 @@ export default function App() {
 
       emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
         .then((response) => {
-          console.log('SUCCESS!', response.status, response.text);
           setAuthSuccessMsg(`✅ ভেরিফিকেশন কোড সফলভাবে আপনার ${cleanEmail} ঠিকানায় পাঠানো হয়েছে।`);
         })
         .catch((err) => {
-          console.log('FAILED...', err);
-          setAuthError('ইমেইল পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
-          return;
+          setAuthError('ইমেইল পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
         });
 
       setAuthStep('forgotPinVerify');
@@ -501,7 +484,7 @@ export default function App() {
     setNewMemberName('');
     setNewMemberEmail('');
     setShowManageDirectory(false);
-    showToastMsg(`${name} (${newMemberSem}) সফলভাবে সেভ হয়েছে!`);
+    showToastMsg(`${name} সফলভাবে যুক্ত হয়েছে!`);
   };
 
   const handleAddTeacherOrCi = async (e) => {
@@ -528,6 +511,26 @@ export default function App() {
     setTeacherEmail('');
     setShowManageTeacherModal(false);
     showToastMsg(`${name} (${semesterLabel}) সফলভাবে যুক্ত হয়েছেন!`);
+  };
+
+  // ডাটাবেজ সহ সরাসরি মেম্বার ডিলিট করার ফাংশন (শুধুমাত্র অ্যাডমিন বা মডারেটরদের জন্য)
+  const handleDeleteMemberFromDirectory = async (id, name) => {
+    if (!hasStaffPower) {
+      showToastMsg('আপনার মেম্বার ডিলিট করার অনুমতি নেই!', 'error');
+      return;
+    }
+    if (window.confirm(`আপনি কি নিশ্চিতভাবে "${name}" কে ডাটাবেজ ও ডিরেক্টরি থেকে স্থায়ীভাবে বাদ দিতে চান?`)) {
+      try {
+        const updatedMembers = { ...membersDirectory };
+        delete updatedMembers[id];
+        // ফায়ারবেস ডাটাবেজে আপডেট করা হচ্ছে যাতে রিয়েল-টাইমে সবার ডাটা থেকে মুছে যায়
+        await setDoc(doc(db, 'helpdesk_settings', 'directory'), { members: updatedMembers }, { merge: true });
+        setMembersDirectory(updatedMembers);
+        showToastMsg(`${name} সফলভাবে ডাটাবেজ থেকে ডিলিট করা হয়েছে!`);
+      } catch (err) {
+        showToastMsg('ডাটাবেজ থেকে ডিলিট করতে সমস্যা হয়েছে!', 'error');
+      }
+    }
   };
 
   const handleAddModerator = async (e) => {
@@ -714,7 +717,7 @@ export default function App() {
       joinedAt: new Date().toISOString()
     });
     setSupportProblem('');
-    showToastMsg('সাপোর্ট সিরিয়ালে যুক্ত হয়েছ!');
+    showToastMsg('সাপোর্ট সিরিয়ালে নাম যুক্ত হয়েছ!');
   };
 
   const handleCompleteStudentSupport = async (queueItem) => {
@@ -726,6 +729,14 @@ export default function App() {
       createdAt: new Date().toISOString()
     });
     showToastMsg(`${queueItem.name}-এর সাপোর্ট সম্পন্ন মার্ক করা হয়েছে!`);
+  };
+
+  const handleNotificationClick = async (notif) => {
+    if (!notif.read) {
+      try {
+        await updateDoc(doc(db, 'helpdesk_notifications', notif.id), { read: true });
+      } catch (e) {}
+    }
   };
 
   const renderRoleBadge = (roll, roleOverride) => {
@@ -783,36 +794,78 @@ export default function App() {
             <form onSubmit={handleVerifyRoll} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">ক্লাস রোল / আইডি *</label>
-                <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="যেমন: 253203"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <input
+                  type="text"
+                  required
+                  value={authId}
+                  onChange={(e) => setAuthId(e.target.value)}
+                  placeholder="যেমন: 201605 বা 253203"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-600"
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">অফিশিয়াল জিমেইল *</label>
+                <input
+                  type="email"
+                  required
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  placeholder="your-email@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-600"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">⚠️ একবার জিমেইল সেট হলে পরবর্তীতে অন্য জিমেইল দিয়ে এই রোল অ্যাক্সেস করা যাবে না।</p>
               </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
-                সামনে এগিয়ে যান
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-200 transition-all"
+              >
+                পরবর্তী ধাপ
               </button>
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setAuthError(''); setAuthSuccessMsg(''); setAuthStep('forgotPinRequest'); }}
+                  className="text-xs text-indigo-600 font-semibold hover:underline"
+                >
+                  পিন ভুলে গেছেন? রিসেট করুন
+                </button>
+              </div>
             </form>
           )}
 
           {authStep === 'createPin' && (
             <form onSubmit={handleCreatePin} className="space-y-4">
-              <div className="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-800 font-medium">
-                👤 {pendingUser?.name} ({pendingUser?.roll}) — প্রথমবার লগইনের জন্য নতুন ৬ ডিজিটের সিক্রেট পিন সেট করুন।
+              <p className="text-xs text-slate-600 bg-indigo-50 p-3 rounded-xl">
+                স্বাগতম <b>{pendingUser?.name}</b>! আপনার অ্যাকাউন্ট সুরক্ষার জন্য একটি ৪-৬ ডিজিটের সিক্রেট পিন সেট করুন।
+              </p>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">সিক্রেট পিন দিন *</label>
+                <input
+                  type="password"
+                  required
+                  maxLength={6}
+                  value={pin1}
+                  onChange={(e) => setPin1(e.target.value)}
+                  placeholder="••••"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন দিন *</label>
-                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="যেমন: 123456"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">পিন কনফার্ম করুন *</label>
+                <input
+                  type="password"
+                  required
+                  maxLength={6}
+                  value={pin2}
+                  onChange={(e) => setPin2(e.target.value)}
+                  placeholder="••••"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">পিনটি পুনরায় লিখুন *</label>
-                <input type="password" required maxLength="6" value={pin2} onChange={e => setPin2(e.target.value)} placeholder="পুনরায় পিন"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
-              </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg transition-all"
+              >
                 পিন সেট ও লগইন করুন
               </button>
             </form>
@@ -820,20 +873,41 @@ export default function App() {
 
           {authStep === 'loginPin' && (
             <form onSubmit={handleLoginPin} className="space-y-4">
-              <div className="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-800 font-medium">
-                স্বাগতম, <b>{pendingUser?.name}</b>! আপনার সিক্রেট পিন দিয়ে প্রবেশ করুন।
-              </div>
+              <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl">
+                ফিরে আসার জন্য স্বাগতম, <b>{pendingUser?.name}</b>! আপনার সিক্রেট পিন দিয়ে প্রবেশ করুন।
+              </p>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার সিক্রেট পিন *</label>
-                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="সিক্রেট পিন দিন"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">সিক্রেট পিন দিন *</label>
+                <input
+                  type="password"
+                  required
+                  maxLength={6}
+                  value={pin1}
+                  onChange={(e) => setPin1(e.target.value)}
+                  placeholder="••••"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg transition-all"
+              >
                 লগইন করুন
               </button>
-              <div className="text-center">
-                <button type="button" onClick={() => setAuthStep('forgotPinRequest')} className="text-xs text-indigo-600 hover:underline font-semibold">
-                  পিন ভুলে গেছেন? রিসেট করুন
+              <div className="flex justify-between items-center pt-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => { setAuthStep('verifyRoll'); setPin1(''); }}
+                  className="text-slate-500 hover:underline"
+                >
+                  ← রোল পরিবর্তন করুন
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthError(''); setAuthSuccessMsg(''); setAuthId(pendingUser?.roll || ''); setAuthStep('forgotPinRequest'); }}
+                  className="text-indigo-600 font-semibold hover:underline"
+                >
+                  পিন রিসেট করুন
                 </button>
               </div>
             </form>
@@ -841,53 +915,109 @@ export default function App() {
 
           {authStep === 'forgotPinRequest' && (
             <form onSubmit={handleRequestPasswordReset} className="space-y-4">
-              <p className="text-xs text-slate-500">আপনার রোল এবং জিমেইল দিয়ে ভেরিফিকেশন কোড নিন।</p>
+              <p className="text-xs text-slate-600 bg-amber-50 p-3 rounded-xl border border-amber-200">
+                🔒 পিন রিসেট করতে আপনার সঠিক রোল এবং পূর্বে রেজিস্টার্ড জিমেইল দিন। জিমেইলে ওটিপি কোড পাঠানো হবে।
+              </p>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">ক্লাস রোল / আইডি *</label>
-                <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="যেমন: 250003"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <input
+                  type="text"
+                  required
+                  value={authId}
+                  onChange={(e) => setAuthId(e.target.value)}
+                  placeholder="যেমন: 201605"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-600"
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">পূর্বে রেজিস্টার্ড জিমেইল *</label>
+                <input
+                  type="email"
+                  required
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  placeholder="your-email@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-600"
+                />
               </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
-                কোড পাঠান
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg transition-all"
+              >
+                ওটিপি কোড পাঠান
               </button>
-              <button type="button" onClick={() => setAuthStep('verifyRoll')} className="w-full text-center text-xs text-slate-500 hover:underline">
-                ফিরে যান
-              </button>
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => setAuthStep('verifyRoll')}
+                  className="text-xs text-slate-500 hover:underline"
+                >
+                  ← লগইনে ফিরে যান
+                </button>
+              </div>
             </form>
           )}
 
           {authStep === 'forgotPinVerify' && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <p className="text-xs text-slate-600 bg-indigo-50 p-3 rounded-xl">
+                আপনার জিমেইলে পাঠানো ৬ ডিজিটের ভেরিফিকেশন কোডটি এখানে লিখুন।
+              </p>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার জিমেইলে পাঠানো ওটিপি কোড দিন *</label>
-                <input type="text" required maxLength="6" value={inputOtp} onChange={e => setInputOtp(e.target.value)} placeholder="৬ ডিজিটের কোড"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm text-center tracking-widest font-bold" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">ভেরিফিকেশন কোড *</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={inputOtp}
+                  onChange={(e) => setInputOtp(e.target.value)}
+                  placeholder="123456"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
-              <button type="submit" className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
-                কোড ভেরিফাই করুন
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg transition-all"
+              >
+                কোড যাচাই করুন
               </button>
             </form>
           )}
 
           {authStep === 'forgotPinReset' && (
             <form onSubmit={handleSaveNewPin} className="space-y-4">
+              <p className="text-xs text-slate-600 bg-emerald-50 p-3 rounded-xl text-emerald-800">
+                ভেরিফিকেশন সফল! এখন নতুন পিন সেট করুন।
+              </p>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন দিন *</label>
-                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="নতুন পিন"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন *</label>
+                <input
+                  type="password"
+                  required
+                  maxLength={6}
+                  value={pin1}
+                  onChange={(e) => setPin1(e.target.value)}
+                  placeholder="••••"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন নিশ্চিত করুন *</label>
-                <input type="password" required maxLength="6" value={pin2} onChange={e => setPin2(e.target.value)} placeholder="কনফার্ম পিন"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন কনফার্ম করুন *</label>
+                <input
+                  type="password"
+                  required
+                  maxLength={6}
+                  value={pin2}
+                  onChange={(e) => setPin2(e.target.value)}
+                  placeholder="••••"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm tracking-widest text-center focus:outline-none focus:border-indigo-600"
+                />
               </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
-                পিন পরিবর্তন সম্পন্ন করুন
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg transition-all"
+              >
+                নতুন পিন সেভ করুন
               </button>
             </form>
           )}
@@ -897,121 +1027,163 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20" style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
+    <div className={`min-h-screen pb-16 transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'}`} style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
       {toast && (
-        <div className="fixed top-5 right-5 z-50 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in">
-          <div className={`w-3 h-3 rounded-full ${toast.type === 'error' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-          <p className="text-sm font-medium">{toast.msg}</p>
+        <div className={`fixed top-5 right-5 z-50 border px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in text-xs font-medium ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+          {toast.type === 'error' ? <X className="w-4 h-4 text-rose-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+          <span>{toast.msg}</span>
         </div>
       )}
 
-      <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={handleSecretTap}>
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg">
-              <GraduationCap className="w-6 h-6 text-white"/>
+      {/* Header */}
+      <header className={`sticky top-0 z-40 backdrop-blur-md border-b transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer select-none" onClick={handleSecretTap}>
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/20">
+              <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-base font-bold text-white flex items-center gap-2">
-                CST Help Desk {renderRoleBadge(currentUser.roll)}
-              </h1>
-              <p className="text-[10px] text-slate-400">Batch 24-25 | DPI</p>
+              <div className="flex items-center gap-2">
+                <h1 className={`text-base font-bold tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>CST Help Desk</h1>
+                {isMainAdmin && <span className="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">Admin</span>}
+              </div>
+              <p className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Batch 24-25 | DPI</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              title="থিম পরিবর্তন করুন"
+              className={`p-2.5 rounded-xl border transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400 hover:bg-slate-700' : 'bg-slate-200 border-slate-300 text-indigo-600 hover:bg-slate-300'}`}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
             <div className="relative">
-              <button onClick={() => setShowNotifDropdown(!showNotifDropdown)} className="relative p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
-                <Bell className="w-5 h-5"/>
-                {notifications.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">
-                    {notifications.length}
+              <button
+                onClick={() => setShowNotifDropdown(!showNotifDropdown)}
+                className={`relative p-2.5 rounded-xl border transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300'}`}
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.filter(n => !n.read).length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                    {notifications.filter(n => !n.read).length}
                   </span>
                 )}
               </button>
 
               {showNotifDropdown && (
-                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-4 z-50">
-                  <h3 className="text-xs font-bold text-slate-300 mb-3 uppercase tracking-wider">রিয়েল-টাইম নোটিফিকেশন</h3>
-                  {notifications.length === 0 ? (
-                    <p className="text-xs text-slate-500 text-center py-4">কোনো নতুন নোটিফিকেশন নেই</p>
-                  ) : (
-                    <div className="space-y-2 max-h-60 overflow-y-auto">
-                      {notifications.map(n => (
-                        <div key={n.id} className="p-2.5 rounded-xl bg-slate-800 text-xs text-slate-200 border border-slate-700/50">
-                          {n.text}
+                <div className={`absolute right-0 mt-2 w-80 sm:w-96 border rounded-2xl shadow-2xl z-50 overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+                  <div className={`p-3 border-b flex justify-between items-center text-xs font-bold ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
+                    <span>রিয়েল-টাইম নোটিফিকেশন</span>
+                    <button onClick={() => setShowNotifDropdown(false)} className="text-slate-400 hover:text-white">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className={`max-h-80 overflow-y-auto divide-y ${isDarkMode ? 'divide-slate-800' : 'divide-slate-100'}`}>
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-xs text-slate-500">কোনো নতুন নোটিফিকেশন নেই</div>
+                    ) : (
+                      notifications.map(n => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleNotificationClick(n)}
+                          className={`p-3 text-xs flex items-start gap-2.5 transition-all cursor-pointer ${n.read ? (isDarkMode ? 'bg-slate-900/50 text-slate-400' : 'bg-slate-50 text-slate-500') : (isDarkMode ? 'bg-slate-800/60 text-slate-200 font-semibold' : 'bg-indigo-50/60 text-slate-900 font-semibold')}`}
+                        >
+                          <span className="mt-0.5">{n.read ? <Check className="w-4 h-4 text-slate-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}</span>
+                          <p className="leading-relaxed">{n.text}</p>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
               )}
             </div>
 
-            <button onClick={() => setShowProfileModal(true)} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl border border-slate-700">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-                {userInfo.name.charAt(0)}
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-slate-200 border-slate-300 text-slate-800 hover:bg-slate-300'}`}
+            >
+              <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold">
+                {userInfo?.name?.charAt(0) || 'U'}
               </div>
-              <span className="text-xs font-bold text-slate-200 hidden sm:inline">{userInfo.name}</span>
+              <span className="hidden sm:inline">{userInfo?.name}</span>
             </button>
 
-            <button onClick={handleLogout} className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400">
-              <LogOut className="w-5 h-5"/>
+            <button
+              onClick={handleLogout}
+              title="লগআউট"
+              className="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all"
+            >
+              <LogOut className="w-5 h-5" />
             </button>
           </div>
         </div>
+
+        {/* Navigation Tabs */}
+        <div className="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none">
+          <button
+            onClick={() => setActiveTab('feed')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'feed' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : (isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700')}`}
+          >
+            <MessageSquare className="w-4 h-4" /> কোডিং ফিড & হেল্প
+          </button>
+          <button
+            onClick={() => setActiveTab('notice')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'notice' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : (isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700')}`}
+          >
+            <Megaphone className="w-4 h-4" /> নোটিশ বোর্ড
+          </button>
+          <button
+            onClick={() => setActiveTab('support')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'support' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : (isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700')}`}
+          >
+            <Radio className="w-4 h-4" /> লাইভ সাপোর্ট & রুটিন {liveStatus.isLive && <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>}
+          </button>
+          <button
+            onClick={() => setActiveTab('directory')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeTab === 'directory' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : (isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700')}`}
+          >
+            <Users className="w-4 h-4" /> ডিপার্টমেন্টাল ডিরেক্টরি
+          </button>
+        </div>
       </header>
 
-      <nav className="bg-slate-900 border-b border-slate-800 px-4 py-2 sticky top-[65px] z-30">
-        <div className="max-w-6xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
-          {[
-            { id: 'feed', label: 'কোডিং ফিড & হেল্প', icon: MessageSquare },
-            { id: 'notices', label: 'নোটিশ বোর্ড', icon: Megaphone },
-            { id: 'support', label: 'লাইভ সাপোর্ট & রুটিন', icon: Radio, badge: liveStatus.isLive ? 'LIVE' : null },
-            { id: 'directory', label: 'ডিপার্টমেন্ট ডিরেক্টরি', icon: Users }
-          ].map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap transition-all ${
-                  isActive ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                }`}>
-                <Icon className="w-4 h-4"/>
-                {tab.label}
-                {tab.badge && (
-                  <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white text-[9px] font-extrabold animate-pulse">
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 py-6">
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
+        {/* --- TAB 1: FEED & HELP --- */}
         {activeTab === 'feed' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
-              <div className="flex items-center gap-2 w-full md:w-auto flex-1">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500"/>
-                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="কোডিং সমস্যা বা পোস্ট খুঁজুন..."
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
-                </div>
+            <div className={`border p-4 rounded-2xl flex flex-col md:flex-row gap-3 items-center justify-between ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="কোডিং সমস্যা বা পোস্ট খুঁজুন..."
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs focus:outline-none focus:border-indigo-500 ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}
+                />
               </div>
 
-              <div className="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
-                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300 font-semibold outline-none">
+              <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className={`border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                >
                   <option value="ALL">সকল স্ট্যাটাস</option>
                   <option value="open">Open (চলমান)</option>
                   <option value="solved">Solved (সমাধানকৃত)</option>
                 </select>
 
-                <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
-                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300 font-semibold outline-none">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className={`border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                >
                   <option value="ALL">সকল ক্যাটাগরি</option>
                   <option value="Coding / Programming">Coding / Programming</option>
                   <option value="Lab Practical">Lab Practical</option>
@@ -1020,279 +1192,306 @@ export default function App() {
                   <option value="General Discussion">General Discussion</option>
                 </select>
 
-                <button onClick={() => setShowCreatePost(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-lg">
-                  <Plus className="w-4 h-4"/> প্রশ্ন করুন / পোস্ট দিন
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 ml-auto"
+                >
+                  <Plus className="w-4 h-4" /> প্রশ্ন করুন / পোস্ট দিন
                 </button>
               </div>
             </div>
 
+            {/* Posts Feed */}
             <div className="space-y-4">
               {filteredPosts.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
-                  কোনো পোস্ট বা প্রশ্ন পাওয়া যায়নি। প্রথম প্রশ্নটি আপনিই করুন!
+                <div className={`border rounded-2xl p-12 text-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500 shadow-sm'}`}>
+                  কোনো পোস্ট পাওয়া যায়নি। প্রথম প্রশ্নটি আপনিই করুন!
                 </div>
               ) : (
-                filteredPosts.map(post => {
-                  const isLiked = (post.likes || []).includes(currentUser.roll);
-                  const canDelete = hasStaffPower || post.authorRoll === currentUser.roll;
-                  return (
-                    <div key={post.id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center">
-                            {post.authorName.charAt(0)}
-                          </div>
-                          <div>
-                            <h4 className="text-xs font-bold text-white flex items-center gap-2">
-                              {post.authorName} {renderRoleBadge(post.authorRoll, post.authorRole)}
-                            </h4>
-                            <p className="text-[10px] text-slate-400">রোল: {post.authorRoll} • {post.authorSemester}</p>
-                          </div>
+                filteredPosts.map(post => (
+                  <div key={post.id} className={`border rounded-2xl p-5 shadow-xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm">
+                          {post.authorName.charAt(0)}
                         </div>
-
-                        <div className="flex items-center gap-2">
-                          <span className={`px-2.5 py-1 rounded-xl text-[10px] font-bold ${post.status === 'solved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
-                            {post.status === 'solved' ? 'Solved' : 'Open'}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{post.authorName}</span>
+                            <span className="text-[10px] text-slate-400">রোল: {post.authorRoll}</span>
+                            {renderRoleBadge(post.authorRoll, post.authorRole)}
+                          </div>
+                          <span className="text-[10px] text-slate-500">
+                            {new Date(post.createdAt).toLocaleDateString('bn-BD', { hour: '2-digit', minute: '2-digit' })}
                           </span>
-                          {canDelete && (
-                            <button onClick={async () => {
-                              if (window.confirm('পোস্টটি ডিলিট করতে চান?')) {
-                                await deleteDoc(doc(db, 'helpdesk_posts', post.id));
-                                showToastMsg('পোস্ট ডিলিট করা হয়েছে!');
-                              }
-                            }} className="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400">
-                              <Trash2 className="w-4 h-4"/>
-                            </button>
-                          )}
                         </div>
                       </div>
 
-                      <div>
-                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-indigo-600/10 text-indigo-400 text-[10px] font-bold mb-2">
-                          {post.category}
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${post.status === 'solved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
+                          {post.status === 'solved' ? 'Solved (সমাধানকৃত)' : 'Open (চলমান)'}
                         </span>
-                        <h3 className="text-base font-bold text-white mb-2">{post.title}</h3>
-                        <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">{post.description}</p>
-                      </div>
-
-                      {post.images && post.images.length > 0 && (
-                        <div className={`grid gap-2 ${post.images.length === 1 ? 'grid-cols-1' : post.images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                          {post.images.map((img, idx) => (
-                            <img key={idx} src={img} alt="attachment" onClick={() => setLightboxImg(img)}
-                              className="w-full h-48 object-cover rounded-2xl cursor-pointer hover:opacity-90 border border-slate-800" />
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-4 pt-3 border-t border-slate-800 text-xs">
-                        <button onClick={async () => {
-                          const likes = post.likes || [];
-                          const newLikes = isLiked ? likes.filter(r => r !== currentUser.roll) : [...likes, currentUser.roll];
-                          await updateDoc(doc(db, 'helpdesk_posts', post.id), { likes: newLikes });
-                        }} className={`flex items-center gap-1.5 font-bold ${isLiked ? 'text-indigo-400' : 'text-slate-400 hover:text-white'}`}>
-                          <ThumbsUp className="w-4 h-4"/> {post.likes?.length || 0} লাইক
-                        </button>
-
-                        {hasStaffPower && (
-                          <button onClick={async () => {
-                            const newStatus = post.status === 'solved' ? 'open' : 'solved';
-                            await updateDoc(doc(db, 'helpdesk_posts', post.id), { status: newStatus });
-                            showToastMsg(`পোস্টটি ${newStatus} করা হয়েছে!`);
-                          }} className="text-indigo-400 hover:underline font-bold">
-                            স্ট্যাটাস পরিবর্তন ({post.status === 'solved' ? 'Open করুন' : 'Solved করুন'})
+                        {(hasStaffPower || currentUser.roll === post.authorRoll) && (
+                          <button
+                            onClick={async () => {
+                              const newStatus = post.status === 'solved' ? 'open' : 'solved';
+                              await updateDoc(doc(db, 'helpdesk_posts', post.id), { status: newStatus });
+                              showToastMsg('পোস্ট স্ট্যাটাস আপডেট হয়েছে!');
+                            }}
+                            className={`p-1.5 rounded-lg text-[10px] ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'}`}
+                            title="স্ট্যাটাস পরিবর্তন করুন"
+                          >
+                            🔄
+                          </button>
+                        )}
+                        {(hasStaffPower || currentUser.roll === post.authorRoll) && (
+                          <button
+                            onClick={async () => {
+                              if (window.confirm('এই পোস্টটি ডিলিট করতে চান?')) {
+                                await deleteDoc(doc(db, 'helpdesk_posts', post.id));
+                                showToastMsg('পোস্ট ডিলিট করা হয়েছে!');
+                              }
+                            }}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
+                    </div>
 
-                      <div className="space-y-3 pt-3 border-t border-slate-800">
-                        <h5 className="text-xs font-bold text-slate-400">মন্তব্যসমূহ ({post.comments?.length || 0})</h5>
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[10px] font-bold mb-2">
+                        {post.category}
+                      </span>
+                      <h2 className={`text-sm font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{post.title}</h2>
+                      <p className={`text-xs leading-relaxed whitespace-pre-wrap ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{post.description}</p>
+                    </div>
 
-                        {(post.comments || []).map(comment => {
-                          const isCommentLiked = (comment.likes || []).includes(currentUser.roll);
-                          return (
-                            <div key={comment.id} className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center">
-                                    {comment.authorName.charAt(0)}
-                                  </div>
-                                  <div>
-                                    <h6 className="text-xs font-bold text-white flex items-center gap-1.5">
-                                      {comment.authorName} {renderRoleBadge(comment.authorRoll, comment.authorRole)}
-                                    </h6>
-                                    <p className="text-[9px] text-slate-400">রোল: {comment.authorRoll}</p>
-                                  </div>
-                                </div>
+                    {post.images && post.images.length > 0 && (
+                      <div className={`grid gap-2 ${post.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                        {post.images.map((img, idx) => (
+                          <img
+                            key={idx}
+                            src={img}
+                            alt="post-img"
+                            onClick={() => setLightboxImg(img)}
+                            className="w-full h-40 object-cover rounded-xl border border-slate-800 cursor-pointer hover:opacity-95"
+                          />
+                        ))}
+                      </div>
+                    )}
 
-                                {(hasStaffPower || comment.authorRoll === currentUser.roll) && (
-                                  <button onClick={async () => {
-                                    const updated = post.comments.filter(c => c.id !== comment.id);
-                                    await updateDoc(doc(db, 'helpdesk_posts', post.id), { comments: updated });
-                                    showToastMsg('কমেন্ট ডিলিট করা হয়েছে!');
-                                  }} className="text-slate-500 hover:text-rose-400 text-xs">
-                                    <Trash2 className="w-3.5 h-3.5"/>
-                                  </button>
-                                )}
+                    {post.videoUrl && (
+                      <div className={`p-3 rounded-xl border flex items-center gap-2 text-xs ${isDarkMode ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                        <Video className="w-4 h-4 text-indigo-400" />
+                        <a href={post.videoUrl} target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline truncate">
+                          {post.videoUrl}
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Comments Section */}
+                    <div className={`pt-3 border-t space-y-3 ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <h3 className="text-xs font-bold text-slate-400">কমেন্টস ({post.comments?.length || 0})</h3>
+
+                      <div className="space-y-3">
+                        {(post.comments || []).map(comm => (
+                          <div key={comm.id} className={`p-3 rounded-xl border space-y-2 ${isDarkMode ? 'bg-slate-950/60 border-slate-800/80' : 'bg-slate-50 border-slate-200'}`}>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className={`text-xs font-bold ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>{comm.authorName}</span>
+                                <span className="text-[10px] text-slate-500">রোল: {comm.authorRoll}</span>
+                                {renderRoleBadge(comm.authorRoll, comm.authorRole)}
                               </div>
-
-                              <p className="text-xs text-slate-200 whitespace-pre-wrap pl-9">{comment.text}</p>
-
-                              {comment.images && comment.images.length > 0 && (
-                                <div className="pl-9 grid grid-cols-3 gap-2 mt-2">
-                                  {comment.images.map((img, i) => (
-                                    <img key={i} src={img} alt="comment-att" onClick={() => setLightboxImg(img)}
-                                      className="w-full h-24 object-cover rounded-xl cursor-pointer border border-slate-800" />
-                                  ))}
-                                </div>
-                              )}
-
-                              <div className="pl-9 flex items-center gap-4 pt-1 text-[11px]">
-                                <button onClick={() => handleCommentLike(post, comment.id)} className={`flex items-center gap-1 font-bold ${isCommentLiked ? 'text-indigo-400' : 'text-slate-400'}`}>
-                                  <ThumbsUp className="w-3 h-3"/> {comment.likes?.length || 0}
-                                </button>
-                                <button onClick={() => setActiveReplyBox(activeReplyBox === comment.id ? null : comment.id)} className="text-indigo-400 font-bold hover:underline">
-                                  রিপ্লাই ({comment.replies?.length || 0})
-                                </button>
-                              </div>
-
-                              {comment.replies && comment.replies.length > 0 && (
-                                <div className="pl-9 space-y-2 mt-2 pt-2 border-t border-slate-800/60">
-                                  {comment.replies.map(reply => (
-                                    <div key={reply.id} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                                          <CornerDownRight className="w-3 h-3 text-indigo-400"/> {reply.authorName} {renderRoleBadge(reply.authorRoll, reply.authorRole)}
-                                        </span>
-                                        {(hasStaffPower || reply.authorRoll === currentUser.roll) && (
-                                          <button onClick={async () => {
-                                            const updatedComments = post.comments.map(c => {
-                                              if (c.id === comment.id) {
-                                                return { ...c, replies: c.replies.filter(r => r.id !== reply.id) };
-                                              }
-                                              return c;
-                                            });
-                                            await updateDoc(doc(db, 'helpdesk_posts', post.id), { comments: updatedComments });
-                                            showToastMsg('রিপ্লাই ডিলিট করা হয়েছে!');
-                                          }} className="text-slate-500 hover:text-rose-400">
-                                            <Trash2 className="w-3 h-3"/>
-                                          </button>
-                                        )}
-                                      </div>
-                                      <p className="text-xs text-slate-300 pl-4">{reply.text}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              {activeReplyBox === comment.id && (
-                                <form onSubmit={e => handleAddReply(e, post, comment.id)} className="pl-9 flex gap-2 mt-2">
-                                  <input type="text" value={replyTexts[comment.id] || ''} onChange={e => setReplyTexts(prev => ({ ...prev, [comment.id]: e.target.value }))}
-                                    placeholder="রিপ্লাই লিখুন..." className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
-                                  <button type="submit" className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
-                                    রিপ্লাই দিন
-                                  </button>
-                                </form>
-                              )}
+                              <span className="text-[10px] text-slate-500">
+                                {new Date(comm.createdAt).toLocaleDateString('bn-BD', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
                             </div>
-                          );
-                        })}
 
-                        <form onSubmit={e => handleAddComment(e, post)} className="space-y-2 pt-2">
-                          <div className="flex gap-2">
-                            <input type="text" value={commentTexts[post.id] || ''} onChange={e => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
-                              placeholder="একটি মন্তব্য করুন অথবা ছবি যুক্ত করুন..." className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
-                            <label className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer flex items-center justify-center">
-                              <ImageIcon className="w-4 h-4"/>
-                              <input type="file" accept="image/*" multiple onChange={async (e) => {
+                            <p className={`text-xs ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{comm.text}</p>
+
+                            {comm.images && comm.images.length > 0 && (
+                              <div className="flex gap-2 overflow-x-auto py-1">
+                                {comm.images.map((img, i) => (
+                                  <img
+                                    key={i}
+                                    src={img}
+                                    alt="comm-img"
+                                    onClick={() => setLightboxImg(img)}
+                                    className="w-20 h-20 object-cover rounded-lg border border-slate-800 cursor-pointer"
+                                  />
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-4 pt-1">
+                              <button
+                                onClick={() => handleCommentLike(post, comm.id)}
+                                className={`flex items-center gap-1 text-[11px] font-semibold ${comm.likes?.includes(currentUser.roll) ? 'text-indigo-400' : 'text-slate-400 hover:text-slate-200'}`}
+                              >
+                                <ThumbsUp className="w-3.5 h-3.5" /> {comm.likes?.length || 0} লাইক
+                              </button>
+                              <button
+                                onClick={() => setActiveReplyBox(activeReplyBox === comm.id ? null : comm.id)}
+                                className="text-[11px] text-slate-400 hover:text-slate-200 font-semibold flex items-center gap-1"
+                              >
+                                <CornerDownRight className="w-3.5 h-3.5" /> রিপ্লাই
+                              </button>
+                            </div>
+
+                            {comm.replies && comm.replies.length > 0 && (
+                              <div className="pl-4 border-l-2 border-indigo-500/30 space-y-2 mt-2">
+                                {comm.replies.map(rep => (
+                                  <div key={rep.id} className={`p-2.5 rounded-lg text-xs space-y-1 ${isDarkMode ? 'bg-slate-900/80' : 'bg-white border border-slate-200'}`}>
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className={`font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-800'}`}>{rep.authorName}</span>
+                                        {renderRoleBadge(rep.authorRoll, rep.authorRole)}
+                                      </div>
+                                      <span className="text-[9px] text-slate-500">
+                                        {new Date(rep.createdAt).toLocaleDateString('bn-BD', { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
+                                    </div>
+                                    <p className={isDarkMode ? 'text-slate-300' : 'text-slate-700'}>{rep.text}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {activeReplyBox === comm.id && (
+                              <form onSubmit={(e) => handleAddReply(e, post, comm.id)} className="flex gap-2 pt-2">
+                                <input
+                                  type="text"
+                                  value={replyTexts[comm.id] || ''}
+                                  onChange={(e) => setReplyTexts(prev => ({ ...prev, [comm.id]: e.target.value }))}
+                                  placeholder="রিপ্লাই লিখুন..."
+                                  className={`flex-1 border px-3 py-1.5 rounded-lg text-xs focus:outline-none focus:border-indigo-500 ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'}`}
+                                />
+                                <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                                  রিপ্লাই দিন
+                                </button>
+                              </form>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Add Comment Form */}
+                      <form onSubmit={(e) => handleAddComment(e, post)} className="space-y-2 pt-2">
+                        <div className="flex gap-2 items-center">
+                          <label className={`p-2 rounded-xl border cursor-pointer flex items-center justify-center shrink-0 ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-slate-200 border-slate-300 text-slate-700 hover:bg-slate-300'}`}>
+                            <ImageIcon className="w-4 h-4 text-indigo-400" />
+                            <input
+                              type="file"
+                              multiple
+                              accept="image/*"
+                              onChange={async (e) => {
                                 const files = Array.from(e.target.files);
                                 const compressed = await Promise.all(files.map(f => compressImageFile(f)));
-                                setCommentImagesMap(prev => ({ ...prev, [post.id]: [...(prev[post.id] || []), ...compressed].slice(0, 6) }));
+                                setCommentImagesMap(prev => ({
+                                  ...prev,
+                                  [post.id]: [...(prev[post.id] || []), ...compressed].slice(0, 3)
+                                }));
                                 e.target.value = '';
-                              }} className="hidden" />
-                            </label>
-                            <button type="submit" className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
-                              কমেন্ট
-                            </button>
-                          </div>
+                              }}
+                              className="hidden"
+                            />
+                          </label>
 
-                          {commentImagesMap[post.id] && commentImagesMap[post.id].length > 0 && (
-                            <div className="flex gap-2 flex-wrap pt-1">
-                              {commentImagesMap[post.id].map((img, idx) => (
-                                <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-700">
-                                  <img src={img} alt="preview" className="w-full h-full object-cover" />
-                                  <button type="button" onClick={() => {
-                                    const filtered = commentImagesMap[post.id].filter((_, i) => i !== idx);
-                                    setCommentImagesMap(prev => ({ ...prev, [post.id]: filtered }));
-                                  }} className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
-                                    ×
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </form>
-                      </div>
+                          <input
+                            type="text"
+                            value={commentTexts[post.id] || ''}
+                            onChange={(e) => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            placeholder="একটি সমাধান বা কমেন্ট লিখুন..."
+                            className={`flex-1 border px-3 py-2 rounded-xl text-xs focus:outline-none focus:border-indigo-500 ${isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                          />
+
+                          <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shrink-0">
+                            কমেন্ট
+                          </button>
+                        </div>
+
+                        {commentImagesMap[post.id] && commentImagesMap[post.id].length > 0 && (
+                          <div className="flex gap-2 py-1 pl-9">
+                            {commentImagesMap[post.id].map((img, idx) => (
+                              <img key={idx} src={img} alt="preview" className="w-12 h-12 object-cover rounded-lg border border-slate-700" />
+                            ))}
+                          </div>
+                        )}
+                      </form>
                     </div>
-                  );
-                })
+                  </div>
+                ))
               )}
             </div>
           </div>
         )}
 
-        {activeTab === 'notices' && (
+        {/* --- TAB 2: NOTICE BOARD --- */}
+        {activeTab === 'notice' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between">
+            <div className={`border p-4 rounded-2xl flex justify-between items-center ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div>
-                <h2 className="text-lg font-bold text-white">ডিপার্টমেন্ট নোটিশ বোর্ড</h2>
-                <p className="text-xs text-slate-400 mt-0.5">অফিশিয়াল ক্লাস নোটিশ ও গুরুত্বপূর্ণ ঘোষণা</p>
+                <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>ডিপার্টমেন্টাল নোটিশ বোর্ড</h2>
+                <p className="text-xs text-slate-400">গুরুত্বপূর্ণ অফিশিয়াল নোটিশ ও ঘোষণা</p>
               </div>
               {hasStaffPower && (
-                <button onClick={() => setShowAddNotice(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-lg">
-                  <Plus className="w-4 h-4"/> নোটিশ দিন
+                <button
+                  onClick={() => setShowAddNotice(true)}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30"
+                >
+                  <Plus className="w-4 h-4" /> নতুন নোটিশ দিন
                 </button>
               )}
             </div>
 
             <div className="space-y-4">
               {notices.length === 0 ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
+                <div className={`border rounded-2xl p-12 text-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500 shadow-sm'}`}>
                   কোনো নোটিশ নেই।
                 </div>
               ) : (
-                notices.map(notice => (
-                  <div key={notice.id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center">
-                          <Megaphone className="w-5 h-5"/>
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-white">{notice.authorName}</h4>
-                          <p className="text-[10px] text-slate-400">{new Date(notice.createdAt).toLocaleString('bn-BD')}</p>
-                        </div>
+                notices.map(n => (
+                  <div key={n.id} className={`border rounded-2xl p-6 shadow-xl space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">{n.authorRole || 'Official Notice'}</span>
+                        <h2 className={`text-base font-bold mt-0.5 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{n.title}</h2>
                       </div>
-
-                      {hasStaffPower && (
-                        <button onClick={async () => {
-                          if (window.confirm('নোটিশটি ডিলিট করতে চান?')) {
-                            await deleteDoc(doc(db, 'helpdesk_notices', notice.id));
-                            showToastMsg('নোটিশ ডিলিট করা হয়েছে!');
-                          }
-                        }} className="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400">
-                          <Trash2 className="w-4 h-4"/>
-                        </button>
-                      )}
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {new Date(n.createdAt).toLocaleDateString('bn-BD')}
+                        </span>
+                        {hasStaffPower && (
+                          <button
+                            onClick={async () => {
+                              if (window.confirm('নোটিশটি ডিলিট করতে চান?')) {
+                                await deleteDoc(doc(db, 'helpdesk_notices', n.id));
+                                showToastMsg('নোটিশ ডিলিট করা হয়েছে!');
+                              }
+                            }}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
+                    <p className={`text-xs leading-relaxed whitespace-pre-wrap ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>{n.description}</p>
 
-                    <h3 className="text-base font-bold text-white">{notice.title}</h3>
-                    <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">{notice.description}</p>
-
-                    {notice.images && notice.images.length > 0 && (
-                      <div className={`grid gap-2 ${notice.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                        {notice.images.map((img, idx) => (
-                          <img key={idx} src={img} alt="notice-att" onClick={() => setLightboxImg(img)}
-                            className="w-full h-56 object-cover rounded-2xl cursor-pointer border border-slate-800" />
+                    {n.images && n.images.length > 0 && (
+                      <div className={`grid gap-2 mt-3 ${n.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3'}`}>
+                        {n.images.map((img, idx) => (
+                          <img
+                            key={idx}
+                            src={img}
+                            alt="notice-img"
+                            onClick={() => setLightboxImg(img)}
+                            className="w-full h-48 object-cover rounded-xl border border-slate-800 cursor-pointer hover:opacity-95"
+                          />
                         ))}
                       </div>
                     )}
@@ -1303,176 +1502,202 @@ export default function App() {
           </div>
         )}
 
+        {/* --- TAB 3: LIVE SUPPORT & ROUTINE --- */}
         {activeTab === 'support' && (
           <div className="space-y-6">
-            <div className={`rounded-3xl p-6 border shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 ${liveStatus.isLive ? 'bg-gradient-to-r from-indigo-900/80 to-purple-900/80 border-indigo-500/50' : 'bg-slate-900 border-slate-800'}`}>
-              <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2">
-                  <span className={`w-3 h-3 rounded-full ${liveStatus.isLive ? 'bg-emerald-500 animate-ping' : 'bg-slate-500'}`} />
-                  <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-300">
-                    {liveStatus.isLive ? 'লাইভ সাপোর্ট সেশন চালু আছে' : 'বর্তমানে কোনো লাইভ সেশন নেই'}
-                  </span>
+            {liveStatus.isLive ? (
+              <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-500/30 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="text-xs font-bold text-emerald-400 uppercase tracking-wide">লাইভ সাপোর্ট সেশন চালু আছে</span>
+                  </div>
+                  <h2 className="text-lg font-bold text-white">{liveStatus.sessionTitle}</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">সময়: {liveStatus.timeRange}</p>
                 </div>
-                <h2 className="text-xl font-bold text-white">{liveStatus.isLive ? liveStatus.sessionTitle : 'নির্ধারিত রুটিন অনুযায়ী সাপোর্ট সেশন অনুষ্ঠিত হয়'}</h2>
-                <p className="text-xs text-slate-300">{liveStatus.isLive ? `সময়: ${liveStatus.timeRange}` : 'নিচে রুটিন চেক করুন এবং সিরিয়ালে নাম যুক্ত করুন।'}</p>
-              </div>
 
-              {liveStatus.isLive && supportConfig.meetLink && (
-                <a href={supportConfig.meetLink} target="_blank" rel="noopener noreferrer"
-                  className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl flex items-center gap-2 text-sm whitespace-nowrap">
-                  <Video className="w-5 h-5"/> গুগল মিট জয়েন করুন <ExternalLink className="w-4 h-4"/>
-                </a>
-              )}
-            </div>
+                {supportQueue.some(q => q.roll === currentUser.roll) || hasStaffPower ? (
+                  <a
+                    href={supportConfig.meetLink || "https://meet.google.com"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-xl shadow-emerald-600/30 transition-all animate-bounce"
+                  >
+                    <Video className="w-5 h-5" /> গুগল মিট জয়েন করুন <ExternalLink className="w-4 h-4 ml-1" />
+                  </a>
+                ) : (
+                  <div className="flex flex-col items-end gap-1">
+                    <button
+                      disabled
+                      className="flex items-center gap-2 bg-slate-800 text-slate-500 px-6 py-3 rounded-xl font-bold text-sm cursor-not-allowed opacity-60"
+                    >
+                      <Video className="w-5 h-5" /> গুগল মিট জয়েন করুন
+                    </button>
+                    <span className="text-[11px] text-amber-400 font-semibold flex items-center gap-1 mt-1">
+                      <Lock className="w-3.5 h-3.5" /> আগে নিচে সিরিয়াল ফর্ম পূরণ করুন
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className={`border rounded-2xl p-6 text-center space-y-2 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <Radio className="w-8 h-8 text-slate-500 mx-auto animate-pulse" />
+                <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>বর্তমানে কোনো লাইভ সাপোর্ট সেশন চালু নেই</h2>
+                <p className="text-xs text-slate-400">রুটিন অনুযায়ী নির্ধারিত সময়ে সেশন শুরু হবে।</p>
+              </div>
+            )}
 
             {hasStaffPower && (
-              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400"/> লাইভ সাপোর্ট কন্ট্রোল প্যানেল
-                </h3>
-
+              <div className={`border rounded-2xl p-5 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h2 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">লাইভ সাপোর্ট কন্ট্রোল প্যানেল</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">গুগল মিট লিংক সেট করুন</label>
-                    <div className="flex gap-2">
-                      <input type="text" defaultValue={supportConfig.meetLink} onBlur={e => handleUpdateSupportSettings('meetLink', e.target.value)}
-                        placeholder="https://meet.google.com/xxx-xxxx-xxx" className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-                    </div>
+                    <label className={`block text-xs font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>গুগল মিট লিংক সেট করুন</label>
+                    <input
+                      type="url"
+                      defaultValue={supportConfig.meetLink}
+                      onBlur={(e) => handleUpdateSupportSettings('meetLink', e.target.value)}
+                      placeholder="https://meet.google.com/..."
+                      className={`w-full border px-3 py-2 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                    />
                   </div>
-
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">সেশন স্ট্যাটাস ফোর্স কন্ট্রোল</label>
-                    <select value={supportConfig.forceStatus} onChange={e => handleUpdateSupportSettings('forceStatus', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 font-semibold outline-none">
-                      <option value="auto">অটো (রুটিন অনুযায়ী)</option>
+                    <label className={`block text-xs font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>সেশন স্ট্যাটাস ফোর্স কন্ট্রোল</label>
+                    <select
+                      value={supportConfig.forceStatus}
+                      onChange={(e) => handleUpdateSupportSettings('forceStatus', e.target.value)}
+                      className={`w-full border px-3 py-2 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                    >
+                      <option value="auto">অটোমেটিক (রুটিন অনুযায়ী)</option>
                       <option value="open">ফোর্স ওপেন (সব সময় লাইভ)</option>
-                      <option value="closed">ফোর্স ক্লোজড (বন্ধ রাখুন)</option>
+                      <option value="closed">ফোর্স ক্লোজড (বন্ধ)</option>
                     </select>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Clock className="w-4 h-4 text-indigo-400"/> সাপোর্ট সিরিয়ালে নাম লিখুন
-              </h3>
+            {/* Support Queue Form */}
+            <div className={`border rounded-2xl p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-indigo-400" />
+                <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>সাপোর্ট সিরিয়ালে নাম লিখুন</h2>
+              </div>
 
               <form onSubmit={handleJoinSupportQueue} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">সমস্যার বিষয় / টপিক *</label>
-                    <select value={supportTopic} onChange={e => setSupportTopic(e.target.value)}
-                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                    <label className={`block text-xs font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>সমস্যার বিষয় / টপিক *</label>
+                    <select
+                      value={supportTopic}
+                      onChange={(e) => setSupportTopic(e.target.value)}
+                      className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                    >
                       <option value="Coding / Lab Problem">Coding / Lab Problem</option>
                       <option value="C Programming Debugging">C Programming Debugging</option>
-                      <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
-                      <option value="HTML / Web Lab">HTML / Web Lab</option>
-                      <option value="General Academic Help">General Academic Help</option>
+                      <option value="Web Design / HTML-CSS">Web Design / HTML-CSS</option>
+                      <option value="General Question">General Question</option>
                     </select>
                   </div>
-
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 mb-1">আপনার সমস্যা সংক্ষেপে লিখুন *</label>
-                    <input type="text" required value={supportProblem} onChange={e => setSupportProblem(e.target.value)}
-                      placeholder="যেমন: পয়েন্টার লজিক বুঝতে পারছি না..." className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                    <label className={`block text-xs font-bold mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>আপনার সমস্যা সংক্ষেপে লিখুন *</label>
+                    <textarea
+                      rows={4}
+                      required
+                      value={supportProblem}
+                      onChange={(e) => setSupportProblem(e.target.value)}
+                      placeholder="যেমন: পয়েন্টার লজিক বুঝতে পারছি না..."
+                      className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                    ></textarea>
                   </div>
                 </div>
-
-                <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
-                  সাপোর্ট সিরিয়ালে নাম যুক্ত করুন
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all"
+                >
+                  সাপোর্ট সিরিয়ালে নাম যুক্ত করুন
                 </button>
               </form>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-              <h3 className="text-sm font-bold text-white">বর্তমান সাপোর্ট সিরিয়াল ({supportQueue.length})</h3>
-
-              {supportQueue.length === 0 ? (
-                <p className="text-xs text-slate-500 py-6 text-center">বর্তমানে কেউ সিরিয়ালে নেই।</p>
-              ) : (
-                <div className="space-y-3">
-                  {supportQueue.map((item, index) => (
-                    <div key={item.id} className="p-4 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-                          #{index + 1}
+            <div className={`border rounded-2xl p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>বর্তমান সাপোর্ট সিরিয়াল ({supportQueue.length})</h2>
+              <div className="space-y-3">
+                {supportQueue.length === 0 ? (
+                  <div className="text-xs text-slate-500 text-center py-4">বর্তমানে সিরিয়ালে কেউ নেই</div>
+                ) : (
+                  supportQueue.map((q, idx) => (
+                    <div key={q.id} className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-3 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center border border-indigo-500/30">
+                          #{idx + 1}
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-white">{item.name} (রোল: {item.roll})</h4>
-                          <p className="text-xs text-indigo-300 font-semibold mt-0.5">টপিক: {item.topic}</p>
-                          <p className="text-xs text-slate-300 mt-1">সমস্যা: {item.problem}</p>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{q.name}</span>
+                            <span className="text-[10px] text-slate-400">রোল: {q.roll}</span>
+                            {renderRoleBadge(q.roll)}
+                          </div>
+                          <p className="text-xs text-indigo-400 mt-0.5"><b>টপিক:</b> {q.topic}</p>
+                          <p className={`text-xs mt-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}><b>সমস্যা:</b> {q.problem}</p>
                         </div>
                       </div>
 
                       {hasStaffPower && (
-                        <button onClick={() => handleCompleteStudentSupport(item)} className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow">
+                        <button
+                          onClick={() => handleCompleteStudentSupport(q)}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg"
+                        >
                           সম্পন্ন করুন
                         </button>
                       )}
                     </div>
-                  ))}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
             </div>
 
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-indigo-400"/> সাপ্তাহিক সাপোর্ট রুটিন
-                </h3>
+            <div className={`border rounded-2xl p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <div className="flex justify-between items-center">
+                <h2 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>সাপ্তাহিক লাইভ সাপোর্ট রুটিন</h2>
+                {hasStaffPower && (
+                  <button
+                    onClick={() => {
+                      const title = prompt('সেশনের নাম দিন:', 'Evening Support');
+                      if (title) {
+                        setRTitle(title);
+                        handleAddRoutine({ preventDefault: () => {} });
+                      }
+                    }}
+                    className="text-xs text-indigo-400 font-bold hover:underline flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> রুটিন যোগ করুন
+                  </button>
+                )}
               </div>
 
-              {hasStaffPower && (
-                <form onSubmit={handleAddRoutine} className="p-4 rounded-2xl bg-slate-800 border border-slate-700 grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">বার</label>
-                    <select value={rDay} onChange={e => setRDay(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
-                      {DAYS_OF_WEEK.map(d => <option key={d} value={d}>{DAYS_BN[d]}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">সেশনের নাম</label>
-                    <input type="text" value={rTitle} onChange={e => setRTitle(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">শুরু</label>
-                    <input type="time" value={rStart} onChange={e => setRStart(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-bold text-slate-400 mb-1">শেষ</label>
-                    <input type="time" value={rEnd} onChange={e => setREnd(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-                  </div>
-                  <button type="submit" className="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
-                    রুটিন যোগ করুন
-                  </button>
-                </form>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {DAYS_OF_WEEK.map(day => {
-                  const dayRoutines = routineList.filter(r => r.day === day);
+                  const slots = routineList.filter(r => r.day === day);
                   return (
-                    <div key={day} className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2">
-                      <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">{DAYS_BN[day]} ({day})</h4>
-                      {dayRoutines.length === 0 ? (
-                        <p className="text-xs text-slate-500">কোনো সেশন নেই</p>
+                    <div key={day} className={`p-4 rounded-xl border space-y-2 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                      <h3 className="text-xs font-bold text-indigo-400">{DAYS_BN[day]}</h3>
+                      {slots.length === 0 ? (
+                        <p className="text-[11px] text-slate-500">কোনো সেশন নেই</p>
                       ) : (
-                        <div className="space-y-2">
-                          {dayRoutines.map(r => (
-                            <div key={r.id} className="p-2.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between text-xs">
-                              <div>
-                                <p className="font-bold text-white">{r.title}</p>
-                                <p className="text-[10px] text-slate-400">{formatTime12h(r.startTime)} - {formatTime12h(r.endTime)}</p>
-                              </div>
-                              {hasStaffPower && (
-                                <button onClick={() => handleDeleteRoutine(r.id)} className="text-slate-500 hover:text-rose-400">
-                                  <Trash2 className="w-3.5 h-3.5"/>
-                                </button>
-                              )}
+                        slots.map(s => (
+                          <div key={s.id} className={`p-2.5 rounded-lg border flex justify-between items-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                            <div>
+                              <p className={`font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{s.title}</p>
+                              <p className="text-[10px] text-slate-400">{s.startTime} - {s.endTime}</p>
                             </div>
-                          ))}
-                        </div>
+                            {hasStaffPower && (
+                              <button onClick={() => handleDeleteRoutine(s.id)} className="text-rose-400 hover:text-rose-300">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))
                       )}
                     </div>
                   );
@@ -1482,71 +1707,130 @@ export default function App() {
           </div>
         )}
 
+        {/* --- TAB 4: DEPARTMENT DIRECTORY --- */}
         {activeTab === 'directory' && (
           <div className="space-y-6">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className={`border p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div>
-                <h2 className="text-lg font-bold text-white">ডিপার্টমেন্ট মেম্বার ডিরেক্টরি</h2>
-                <p className="text-xs text-slate-400 mt-0.5">CST Batch 24-25 এবং শিক্ষকবৃন্দ</p>
+                <h2 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>ডিপার্টমেন্টাল ডিরেক্টরি</h2>
+                <p className="text-xs text-slate-400 mt-0.5">সেমিস্টার অনুযায়ী শিক্ষক, সিআই ও ছাত্রছাত্রীবৃন্দ</p>
               </div>
 
               {hasStaffPower && (
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button onClick={() => setShowManageDirectory(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
-                    <UserPlus className="w-4 h-4"/> ছাত্র / মেম্বার যোগ করুন
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setShowManageDirectory(true)}
+                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg"
+                  >
+                    <UserPlus className="w-4 h-4" /> ছাত্র / মেম্বার যোগ করুন
                   </button>
-                  <button onClick={() => setShowManageTeacherModal(true)} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
-                    <Award className="w-4 h-4"/> শিক্ষক / CI যোগ করুন
+                  <button
+                    onClick={() => setShowManageTeacherModal(true)}
+                    className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg"
+                  >
+                    <Award className="w-4 h-4" /> শিক্ষক / CI যোগ করুন
                   </button>
-                  <button onClick={() => setShowManageMods(true)} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
-                    <ShieldCheck className="w-4 h-4"/> মডারেটর ম্যানেজ
+                  <button
+                    onClick={() => setShowManageMods(true)}
+                    className="flex items-center gap-2 bg-purple-700 hover:bg-purple-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg"
+                  >
+                    <ShieldAlert className="w-4 h-4" /> মডারেটর ম্যানেজ
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {Object.entries(membersDirectory).map(([roll, member]) => (
-                <div key={roll} className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 flex flex-col justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 font-bold text-base flex items-center justify-center">
-                      {member.name.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                        {member.name} {renderRoleBadge(roll, member.role)}
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-0.5">রোল: {roll}</p>
-                      <p className="text-[10px] text-slate-500">{member.semester}</p>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-slate-800 text-xs text-slate-300 flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-indigo-400"/>
-                    <span className="truncate">{member.email}</span>
-                  </div>
-                </div>
+            {/* Semester Tabs / Filter Bar */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {SEMESTERS_LIST.map(sem => (
+                <button
+                  key={sem}
+                  onClick={() => setDirectorySemFilter(sem)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${directorySemFilter === sem ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : (isDarkMode ? 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800' : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm')}`}
+                >
+                  {sem === 'ALL' ? 'সকল মেম্বার' : sem === 'TEACHERS' ? '👨‍🏫 শিক্ষক / CI' : sem}
+                </button>
               ))}
+            </div>
+
+            {/* Members / Teachers Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {Object.entries(membersDirectory)
+                .filter(([_, member]) => {
+                  const isTeacherOrCI = member.role === 'teacher' || member.role === 'ci_sir';
+                  if (directorySemFilter === 'ALL') {
+                    return !isTeacherOrCI;
+                  }
+                  if (directorySemFilter === 'TEACHERS') {
+                    return isTeacherOrCI;
+                  }
+                  return member.semester === directorySemFilter;
+                })
+                .map(([id, member]) => {
+                  const isTeacherOrCI = member.role === 'teacher' || member.role === 'ci_sir';
+                  return (
+                    <div key={id} className={`border rounded-2xl p-5 shadow-xl space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                      <div className={`absolute top-0 left-0 w-1 h-full ${member.role === 'ci_sir' ? 'bg-purple-600' : member.role === 'teacher' ? 'bg-emerald-600' : 'bg-indigo-600'}`}></div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm shadow-lg">
+                            {member.name.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{member.name}</h3>
+                            <p className="text-[11px] text-indigo-400 font-semibold">{member.semester} {!isTeacherOrCI && id !== '253203' && `(রোল: ${id})`}</p>
+                            {renderRoleBadge(id, member.role)}
+                          </div>
+                        </div>
+
+                        {/* ডিলিট বাটন: শুধুমাত্র অ্যাডমিন বা মডারেটর (hasStaffPower) হলে তবেই রেন্ডার বা দেখাবে */}
+                        {hasStaffPower && (
+                          <button
+                            onClick={() => handleDeleteMemberFromDirectory(id, member.name)}
+                            className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all cursor-pointer z-10"
+                            title="ডাটাবেজ থেকে ডিলিট করুন"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+
+                      {isTeacherOrCI && (
+                        <div className={`pt-2 border-t text-xs flex items-center gap-2 ${isDarkMode ? 'border-slate-800 text-slate-300' : 'border-slate-100 text-slate-600'}`}>
+                          <Mail className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="truncate">{member.email || 'N/A'}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </div>
         )}
+
       </main>
+
+      {/* --- MODALS --- */}
 
       {showCreatePost && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">নতুন প্রশ্ন বা পোস্ট তৈরি করুন</h3>
+          <div className={`border rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">নতুন পোস্ট বা প্রশ্ন তৈরি করুন</h2>
               <button onClick={() => setShowCreatePost(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5"/>
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreatePost} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ক্যাটাগরি *</label>
-                <select value={postCategory} onChange={e => setPostCategory(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                <label className="block text-xs font-bold mb-1">ক্যাটাগরি *</label>
+                <select
+                  value={postCategory}
+                  onChange={(e) => setPostCategory(e.target.value)}
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                >
                   <option value="Coding / Programming">Coding / Programming</option>
                   <option value="Lab Practical">Lab Practical</option>
                   <option value="Hardware / Peripherals">Hardware / Peripherals</option>
@@ -1556,109 +1840,64 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">শিরোনাম *</label>
-                <input type="text" required value={postTitle} onChange={e => setPostTitle(e.target.value)} placeholder="যেমন: সি প্রোগ্রামিং পয়েন্টার এরর..."
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">পোস্টের শিরোনাম *</label>
+                <input
+                  type="text"
+                  required
+                  value={postTitle}
+                  onChange={(e) => setPostTitle(e.target.value)}
+                  placeholder="যেমন: C পয়েন্টার কিভাবে কাজ করে?"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">বিস্তারিত বর্ণনা *</label>
-                <textarea required rows="4" value={postDesc} onChange={e => setPostDesc(e.target.value)} placeholder="আপনার সমস্যা বা আলোচনা বিস্তারিত লিখুন..."
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">বিবরণ *</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={postDesc}
+                  onChange={(e) => setPostDesc(e.target.value)}
+                  placeholder="আপনার সমস্যা বা আলোচনা বিস্তারিত লিখুন..."
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                ></textarea>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৫টি)</label>
-                <input type="file" accept="image/*" multiple onChange={handlePostImageUpload}
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
-              </div>
-
-              {postImages.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {postImages.map((img, idx) => (
-                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-700">
-                      <img src={img} alt="preview" className="w-full h-full object-cover" />
-                      <button type="button" onClick={() => setPostImages(prev => prev.filter((_, i) => i !== idx))}
-                        className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button type="submit" disabled={isSubmittingPost}
-                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
-                {isSubmittingPost ? 'পোস্ট হচ্ছে...' : 'পোস্ট পাবলিশ করুন'}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showAddNotice && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">নতুন নোটিশ বা ঘোষণা দিন</h3>
-              <button onClick={() => setShowAddNotice(false)} className="text-slate-400 hover:text-white">
-                <X className="w-5 h-5"/>
-              </button>
-            </div>
-
-            <form onSubmit={async (e) => {
-              e.preventDefault();
-              if (!postTitle.trim() || !postDesc.trim()) return;
-              try {
-                await addDoc(collection(db, 'helpdesk_notices'), {
-                  title: postTitle.trim(),
-                  description: postDesc.trim(),
-                  images: noticeImages,
-                  authorName: userInfo.name,
-                  authorRoll: currentUser.roll,
-                  createdAt: new Date().toISOString()
-                });
-                setPostTitle(''); setPostDesc(''); setNoticeImages([]);
-                setShowAddNotice(false);
-                showToastMsg('নোটিশ পাবলিশ হয়েছে!');
-              } catch (err) {
-                showToastMsg('নোটিশ দিতে সমস্যা হয়েছে', 'error');
-              }
-            }} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">নোটিশ শিরোনাম *</label>
-                <input type="text" required value={postTitle} onChange={e => setPostTitle(e.target.value)} placeholder="যেমন: ৪র্থ সেমিস্টার ল্যাব ক্লাস রুটিন..."
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">ভিডিও লিংক (ঐচ্ছিক)</label>
+                <input
+                  type="url"
+                  value={postVideo}
+                  onChange={(e) => setPostVideo(e.target.value)}
+                  placeholder="https://youtube.com/..."
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs focus:outline-none ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">বিস্তারিত বিবরণ *</label>
-                <textarea required rows="4" value={postDesc} onChange={e => setPostDesc(e.target.value)} placeholder="নোটিশের বিস্তারিত লিখুন..."
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৫টি)</label>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handlePostImageUpload}
+                  className="w-full border px-3 py-2 rounded-xl text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white"
+                />
+                {postImages.length > 0 && (
+                  <div className="flex gap-2 mt-2">
+                    {postImages.map((img, idx) => (
+                      <img key={idx} src={img} alt="preview" className="w-14 h-14 object-cover rounded-xl border border-slate-700" />
+                    ))}
+                  </div>
+                )}
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৩টি)</label>
-                <input type="file" accept="image/*" multiple onChange={handleNoticeImageUpload}
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
-              </div>
-
-              {noticeImages.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {noticeImages.map((img, idx) => (
-                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-700">
-                      <img src={img} alt="preview" className="w-full h-full object-cover" />
-                      <button type="button" onClick={() => setNoticeImages(prev => prev.filter((_, i) => i !== idx))}
-                        className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
-                নোটিশ পাবলিশ করুন
+              <button
+                type="submit"
+                disabled={isSubmittingPost}
+                className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all"
+              >
+                {isSubmittingPost ? 'পাবলিশ হচ্ছে...' : 'পোস্ট পাবলিশ করুন'}
               </button>
             </form>
           </div>
@@ -1667,35 +1906,66 @@ export default function App() {
 
       {showManageDirectory && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">নতুন ছাত্র / মেম্বার যোগ করুন</h3>
-              <button onClick={() => setShowManageDirectory(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
-            </div>
-            <form onSubmit={handleAddMemberToDirectory} className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ক্লাস রোল *</label>
-                <input type="text" required value={newMemberId} onChange={e => setNewMemberId(e.target.value)} placeholder="যেমন: 201635"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">পূর্ণ নাম *</label>
-                <input type="text" required value={newMemberName} onChange={e => setNewMemberName(e.target.value)} placeholder="Student Name"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={newMemberEmail} onChange={e => setNewMemberEmail(e.target.value)} placeholder="student@gmail.com"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">সেমিস্টার</label>
-                <input type="text" value={newMemberSem} onChange={e => setNewMemberSem(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-              </div>
-              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
-                সেভ করুন
+          <div className={`border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">নতুন ছাত্র বা মেম্বার যুক্ত করুন</h2>
+              <button onClick={() => setShowManageDirectory(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
+            </div>
+
+            <form onSubmit={handleAddMemberToDirectory} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold mb-1">ক্লাস রোল / আইডি *</label>
+                <input
+                  type="text"
+                  required
+                  value={newMemberId}
+                  onChange={(e) => setNewMemberId(e.target.value)}
+                  placeholder="যেমন: 201635"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">নাম *</label>
+                <input
+                  type="text"
+                  required
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  placeholder="যেমন: Tanvir Ahmed"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">অফিশিয়াল জিমেইল *</label>
+                <input
+                  type="email"
+                  required
+                  value={newMemberEmail}
+                  onChange={(e) => setNewMemberEmail(e.target.value)}
+                  placeholder="student@gmail.com"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">সেমিস্টার সিলেক্ট করুন *</label>
+                <select
+                  value={newMemberSem}
+                  onChange={(e) => setNewMemberSem(e.target.value)}
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                >
+                  <option value="1st Semester">1st Semester</option>
+                  <option value="2nd Semester">2nd Semester</option>
+                  <option value="3rd Semester">3rd Semester</option>
+                  <option value="4th Semester">4th Semester</option>
+                  <option value="5th Semester">5th Semester</option>
+                  <option value="6th Semester">6th Semester</option>
+                  <option value="7th Semester">7th Semester</option>
+                  <option value="8th Semester">8th Semester</option>
+                </select>
+              </div>
+              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs">মেম্বার সেভ করুন</button>
             </form>
           </div>
         </div>
@@ -1703,38 +1973,60 @@ export default function App() {
 
       {showManageTeacherModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">শিক্ষক বা চিফ ইনস্ট্রাক্টর যোগ করুন</h3>
-              <button onClick={() => setShowManageTeacherModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+          <div className={`border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">শিক্ষক বা সিআই যুক্ত করুন</h2>
+              <button onClick={() => setShowManageTeacherModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <form onSubmit={handleAddTeacherOrCi} className="space-y-3">
+
+            <form onSubmit={handleAddTeacherOrCi} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ভূমিকা নির্বাচন করুন *</label>
-                <select value={teacherRoleType} onChange={e => setTeacherRoleType(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
-                  <option value="teacher">Faculty / Teacher (স্যার)</option>
-                  <option value="ci_sir">Chief Instructor - CI (সিআই স্যার)</option>
+                <label className="block text-xs font-bold mb-1">পদবি / ধরণ *</label>
+                <select
+                  value={teacherRoleType}
+                  onChange={(e) => setTeacherRoleType(e.target.value)}
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                >
+                  <option value="ci_sir">Chief Instructor (CI Sir)</option>
+                  <option value="teacher">Faculty / Teacher</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">আইডি / কোড *</label>
-                <input type="text" required value={teacherId} onChange={e => setTeacherId(e.target.value)} placeholder="যেমন: T-01 বা CI-01"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">আইডি / কোড *</label>
+                <input
+                  type="text"
+                  required
+                  value={teacherId}
+                  onChange={(e) => setTeacherId(e.target.value)}
+                  placeholder="যেমন: ci_01 বা teach_01"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">পূর্ণ নাম *</label>
-                <input type="text" required value={teacherName} onChange={e => setTeacherName(e.target.value)} placeholder="Teacher Name"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">নাম *</label>
+                <input
+                  type="text"
+                  required
+                  value={teacherName}
+                  onChange={(e) => setTeacherName(e.target.value)}
+                  placeholder="যেমন: Dr. Abdul Kader"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={teacherEmail} onChange={e => setTeacherEmail(e.target.value)} placeholder="teacher@gmail.com"
-                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                <label className="block text-xs font-bold mb-1">অফিশিয়াল জিমেইল *</label>
+                <input
+                  type="email"
+                  required
+                  value={teacherEmail}
+                  onChange={(e) => setTeacherEmail(e.target.value)}
+                  placeholder="teacher@gmail.com"
+                  className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                />
               </div>
-              <button type="submit" className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs">
-                সংরক্ষণ করুন
-              </button>
+              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs">শিক্ষক সেভ করুন</button>
             </form>
           </div>
         </div>
@@ -1742,59 +2034,122 @@ export default function App() {
 
       {showManageMods && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">মডারেটর ও মেন্টর ম্যানেজ করুন</h3>
-              <button onClick={() => setShowManageMods(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+          <div className={`border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">মডারেটর ম্যানেজ করুন</h2>
+              <button onClick={() => setShowManageMods(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
             </div>
+
             <form onSubmit={handleAddModerator} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">ছাত্রের ক্লাস রোল দিন *</label>
+                <label className="block text-xs font-bold mb-1">রোল দিয়ে মডারেটর বানান *</label>
                 <div className="flex gap-2">
-                  <input type="text" required value={modInputRoll} onChange={e => setModInputRoll(e.target.value)} placeholder="যেমন: 201605"
-                    className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
-                  <button type="submit" className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs">
+                  <input
+                    type="text"
+                    required
+                    value={modInputRoll}
+                    onChange={(e) => setModInputRoll(e.target.value)}
+                    placeholder="যেমন: 201605"
+                    className={`flex-1 border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+                  />
+                  <button type="submit" className="bg-purple-700 hover:bg-purple-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
                     যুক্ত করুন
                   </button>
                 </div>
               </div>
             </form>
 
-            <div className="space-y-2 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto">
-              <p className="text-xs font-bold text-slate-400">বর্তমান মডারেটরগণ:</p>
-              {moderatorRolls.map(roll => {
-                const mem = membersDirectory[roll];
-                return (
-                  <div key={roll} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 text-xs">
+            <div className={`pt-3 border-t space-y-2 ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+              <h3 className="text-xs font-bold text-slate-400">বর্তমান মডারেটরগণ:</h3>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {moderatorRolls.map(roll => (
+                  <div key={roll} className={`flex justify-between items-center p-2.5 rounded-xl text-xs border ${isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`}>
                     <div>
-                      <p className="font-bold text-white">{mem ? mem.name : 'Unknown'} ({roll})</p>
+                      <span className="font-bold">{membersDirectory[roll]?.name || roll}</span>
+                      <span className="text-slate-400 ml-2">(রোল: {roll})</span>
                     </div>
-                    {roll !== "201605" && (
-                      <button onClick={() => handleRemoveModerator(roll)} className="text-rose-400 hover:underline font-bold">
-                        বাদ দিন
-                      </button>
-                    )}
+                    <button onClick={() => handleRemoveModerator(roll)} className="text-rose-400 hover:text-rose-300">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                );
-              })}
+                ))}
+              </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showAddNotice && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`border rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">নতুন নোটিশ তৈরি করুন</h2>
+              <button onClick={() => setShowAddNotice(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const title = e.target.noticeTitle.value;
+              const desc = e.target.noticeDesc.value;
+              await addDoc(collection(db, 'helpdesk_notices'), {
+                title,
+                description: desc,
+                images: noticeImages,
+                authorRole: userInfo.role === 'ci_sir' ? 'Chief Instructor Notice' : 'Department Notice',
+                createdAt: new Date().toISOString()
+              });
+              setNoticeImages([]);
+              setShowAddNotice(false);
+              showToastMsg('নোটিশ পাবলিশ করা হয়েছে!');
+            }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold mb-1">নোটিশের শিরোনাম *</label>
+                <input type="text" name="noticeTitle" required className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">বিস্তারিত বিবরণ *</label>
+                <textarea rows={4} name="noticeDesc" required className={`w-full border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}></textarea>
+              </div>
+              <div>
+                <label className="block text-xs font-bold mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৩টি)</label>
+                <input type="file" multiple accept="image/*" onChange={handleNoticeImageUpload} className="w-full border px-3 py-2 rounded-xl text-xs text-slate-300" />
+                {noticeImages.length > 0 && (
+                  <div className="flex gap-2 mt-2">
+                    {noticeImages.map((img, idx) => (
+                      <img key={idx} src={img} alt="preview" className="w-14 h-14 object-cover rounded-xl border border-slate-700" />
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs">নোটিশ পাবলিশ করুন</button>
+            </form>
           </div>
         </div>
       )}
 
       {showAdminPinModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-rose-600/20 text-rose-500 flex items-center justify-center mx-auto">
-              <Lock className="w-6 h-6"/>
-            </div>
-            <h3 className="text-base font-bold text-white">অ্যাডমিন সিক্রেট পিন দিন</h3>
-            <form onSubmit={handleVerifyAdminPinModal} className="space-y-3">
-              <input type="password" required maxLength="6" value={adminInputPin} onChange={e => setAdminInputPin(e.target.value)}
-                placeholder="সিক্রেট পিন" className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-center text-sm font-bold text-white outline-none tracking-widest" />
-              <button type="submit" className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow-lg">
-                যাচাই করুন
+          <div className={`border rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-base font-bold">অ্যাডমিন মোড পিন</h2>
+              <button onClick={() => setShowAdminPinModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
+            </div>
+            <form onSubmit={handleVerifyAdminPinModal} className="space-y-4">
+              <input
+                type="password"
+                required
+                value={adminInputPin}
+                onChange={(e) => setAdminInputPin(e.target.value)}
+                placeholder="সিক্রেট পিন দিন"
+                className={`w-full border px-3 py-2.5 rounded-xl text-xs text-center tracking-widest ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}
+              />
+              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs">ভেরিফাই করুন</button>
             </form>
           </div>
         </div>
@@ -1802,51 +2157,31 @@ export default function App() {
 
       {showProfileModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white">আপনার প্রফাইল</h3>
-              <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+          <div className={`border rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 text-center ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+            <div className="w-20 h-20 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-3xl font-bold mx-auto shadow-xl">
+              {userInfo?.name?.charAt(0)}
             </div>
-            <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
-                <p className="text-slate-400">নাম:</p>
-                <p className="font-bold text-white text-sm">{userInfo.name}</p>
-              </div>
-              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
-                <p className="text-slate-400">রোল / আইডি:</p>
-                <p className="font-bold text-white">{currentUser.roll}</p>
-              </div>
-              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
-                <p className="text-slate-400">অফিশিয়াল জিমেইল:</p>
-                <p className="font-bold text-white">{userInfo.email}</p>
-              </div>
-              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
-                <p className="text-slate-400">সেমিস্টার / রোল:</p>
-                <p className="font-bold text-white">{userInfo.semester}</p>
-              </div>
+            <div>
+              <h2 className="text-lg font-bold">{userInfo?.name}</h2>
+              <p className="text-xs text-indigo-400 mt-0.5">রোল: {currentUser.roll}</p>
+              <p className="text-xs text-slate-400 mt-1">{userInfo?.semester}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{userInfo?.email}</p>
             </div>
+            <button
+              onClick={() => setShowProfileModal(false)}
+              className={`w-full py-2.5 rounded-xl text-xs font-bold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-slate-100 border-slate-300 text-slate-800 hover:bg-slate-200'}`}
+            >
+              বন্ধ করুন
+            </button>
           </div>
         </div>
       )}
 
       {lightboxImg && (
         <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setLightboxImg(null)}>
-          <div className="relative max-w-4xl w-full">
-            <button onClick={() => setLightboxImg(null)} className="absolute -top-10 right-0 text-white p-2">
-              <X className="w-8 h-8"/>
-            </button>
-            <img src={lightboxImg} alt="lightbox" className="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl" />
-          </div>
+          <img src={lightboxImg} alt="lightbox" className="max-w-full max-h-[90vh] object-contain rounded-2xl border border-slate-800 shadow-2xl" />
         </div>
       )}
     </div>
   );
-}
-
-function formatTime12h(timeStr) {
-  if (!timeStr) return '';
-  const [h, m] = timeStr.split(':').map(Number);
-  const period = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 || 12;
-  return `${h12}:${m.toString().padStart(2, '0')} ${period}`;
 }
