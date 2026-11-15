@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from './firebase';
+import emailjs from '@emailjs/browser';
 import {
   collection, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot
 } from 'firebase/firestore';
@@ -8,6 +9,11 @@ import {
   Heart, Trash2, Edit3, Image as ImageIcon, Video, Users, UserPlus,
   Megaphone, LogOut, Lock, Radio, Calendar, ExternalLink, X, Check, Award, CornerDownRight, ThumbsUp, KeyRound, Mail, GraduationCap
 } from 'lucide-react';
+
+// EmailJS Configuration (এখানে তোমার রিয়েল আইডিগুলো বসিয়ে নাও)
+const EMAILJS_SERVICE_ID = 'service_cst-help26';
+const EMAILJS_TEMPLATE_ID = 'template_r965t04';
+const EMAILJS_PUBLIC_KEY = '_dvFgtl1UPcDlYxlb';
 
 // ডিপার্টমেন্টের মেম্বার লিস্ট (প্রাথমিক ডেটা)
 const DEFAULT_MEMBERS = {
@@ -151,7 +157,7 @@ export default function App() {
   const [commentTexts, setCommentTexts] = useState({});
   const [commentImagesMap, setCommentImagesMap] = useState({});
   const [replyTexts, setReplyTexts] = useState({});
-  const [activeReplyBox, setActiveReplyBox] = useState(null); // commentId
+  const [activeReplyBox, setActiveReplyBox] = useState(null);
 
   // Live Support & Routine States
   const [routineList, setRoutineList] = useState([]);
@@ -177,7 +183,7 @@ export default function App() {
   const [teacherId, setTeacherId] = useState('');
   const [teacherName, setTeacherName] = useState('');
   const [teacherEmail, setTeacherEmail] = useState('');
-  const [teacherRoleType, setTeacherRoleType] = useState('teacher'); // 'teacher' or 'ci_sir'
+  const [teacherRoleType, setTeacherRoleType] = useState('teacher');
 
   // Moderator Management Form
   const [modInputRoll, setModInputRoll] = useState('');
@@ -307,7 +313,7 @@ export default function App() {
     const member = membersDirectory[cleanId];
 
     if (!member) {
-      setAuthError(`দুঃখিত! "${cleanId}" রোল বা আইডি ডিপার্টমেন্ট তালিকায় পাওয়া যায়নি।`);
+      setAuthError(`দুঃখিত! "${cleanId}" রোল বা আইডি ডিপার্টমেন্ট তালিকায় পাওয়া যায়নি।`);
       return;
     }
 
@@ -316,7 +322,6 @@ export default function App() {
       const userSnap = await getDoc(userDocRef);
 
       if (userSnap.exists() && userSnap.data().pin) {
-        // যদি পূর্বে পিন সেট করা থাকে, তাহলে ইউজারের দেওয়া জিমেইল আপডেট বা ম্যাচ করে পাস দেওয়া হবে
         const userPayload = { ...userSnap.data(), roll: cleanId, email: cleanEmail };
         await setDoc(userDocRef, { email: cleanEmail }, { merge: true });
         setPendingUser(userPayload);
@@ -334,7 +339,7 @@ export default function App() {
         setAuthStep('createPin');
       }
     } catch (err) {
-      setAuthError('কানেকশন সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      setAuthError('কানেকশন সমস্যা হয়েছে। আবার চেষ্টা করুন।');
     }
   };
 
@@ -350,7 +355,7 @@ export default function App() {
       const userSnap = await getDoc(userDocRef);
 
       if (!userSnap.exists()) {
-        setAuthError('এই রোলে কোনো অ্যাকাউন্ট পাওয়া যায়নি।');
+        setAuthError('এই রোলে কোনো অ্যাকাউন্ট পাওয়া যায়নি।');
         return;
       }
 
@@ -358,10 +363,26 @@ export default function App() {
       setGeneratedOtp(otp);
       setPendingUser({ ...userSnap.data(), roll: cleanId, email: cleanEmail });
       
-      setAuthSuccessMsg(`✅ ভেরিফিকেশন কোড: [ ${otp} ] — আপনার ${cleanEmail} ঠিকানায় পাঠানো হয়েছে।`);
+      // EmailJS দিয়ে রিয়েল জিমেইলে ওটিপি পাঠানোর রিকোয়েস্ট
+      const templateParams = {
+        to_email: cleanEmail,
+        otp_code: otp,
+      };
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
+        .then((response) => {
+          console.log('SUCCESS!', response.status, response.text);
+          setAuthSuccessMsg(`✅ ভেরিফিকেশন কোড সফলভাবে আপনার ${cleanEmail} ঠিকানায় পাঠানো হয়েছে।`);
+        })
+        .catch((err) => {
+          console.log('FAILED...', err);
+          setAuthError('ইমেইল পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+          return;
+        });
+
       setAuthStep('forgotPinVerify');
     } catch (err) {
-      setAuthError('রিসেট রিকোয়েস্ট করতে সমস্যা হয়েছে।');
+      setAuthError('রিসেট রিকোয়েস্ট করতে সমস্যা হয়েছে।');
     }
   };
 
@@ -372,23 +393,23 @@ export default function App() {
       setAuthSuccessMsg('কোড মিলেছে! এখন আপনার নতুন পিন সেট করুন।');
       setAuthStep('forgotPinReset');
     } else {
-      setAuthError('ভুল ভেরিফিকেশন কোড দিয়েছেন!');
+      setAuthError('ভুল ভেরিফিকেশন কোড দিয়েছেন!');
     }
   };
 
   const handleSaveNewPin = async (e) => {
     e.preventDefault();
-    if (pin1 !== pin2) return setAuthError('দুটি পিন এক হয়নি!');
+    if (pin1 !== pin2) return setAuthError('দুটি পিন এক হয়নি!');
     try {
       const userDocRef = doc(db, 'helpdesk_users', pendingUser.roll);
       await updateDoc(userDocRef, { pin: pin1 });
-      setAuthSuccessMsg('পিন সফলভাবে পরিবর্তন হয়েছে! এবার লগইন করুন।');
+      setAuthSuccessMsg('পিন সফলভাবে পরিবর্তন হয়েছে! এবার লগইন করুন।');
       setTimeout(() => {
         setAuthStep('verifyRoll');
         setPin1(''); setPin2(''); setInputOtp('');
       }, 1500);
     } catch (err) {
-      setAuthError('পিন আপডেট করা যায়নি।');
+      setAuthError('পিন আপডেট করা যায়নি।');
     }
   };
 
@@ -403,13 +424,13 @@ export default function App() {
 
   const handleCreatePin = async (e) => {
     e.preventDefault();
-    if (pin1 !== pin2) return setAuthError('দুটি পিন এক হয়নি!');
+    if (pin1 !== pin2) return setAuthError('দুটি পিন এক হয়নি!');
     try {
       await handleFinalLoginSuccess({
         ...pendingUser, pin: pin1, createdAt: new Date().toISOString()
       });
     } catch (err) {
-      setAuthError('পিন সেভ করা যায়নি।');
+      setAuthError('পিন সেভ করা যায়নি।');
     }
   };
 
@@ -420,10 +441,10 @@ export default function App() {
       if (snap.exists() && snap.data().pin === pin1) {
         await handleFinalLoginSuccess(pendingUser);
       } else {
-        setAuthError('ভুল পিন দিয়েছেন!');
+        setAuthError('ভুল পিন দিয়েছেন!');
       }
     } catch (err) {
-      setAuthError('লগইন সমস্যা হয়েছে।');
+      setAuthError('লগইন সমস্যা হয়েছে।');
     }
   };
 
@@ -453,7 +474,7 @@ export default function App() {
       localStorage.setItem('hd_admin_mode', newAdminState ? 'true' : 'false');
       setShowAdminPinModal(false);
       setAdminInputPin('');
-      showToastMsg(newAdminState ? '👑 অ্যাডমিন মোড অন হয়েছে!' : 'অ্যাডমিন মোড অফ হয়েছে!');
+      showToastMsg(newAdminState ? '👑 অ্যাডমিন মোড অন হয়েছে!' : 'অ্যাডমিন মোড অফ হয়েছে!');
     } else {
       showToastMsg('ভুল সিক্রেট পিন!', 'error');
     }
@@ -480,7 +501,7 @@ export default function App() {
     setNewMemberName('');
     setNewMemberEmail('');
     setShowManageDirectory(false);
-    showToastMsg(`${name} (${newMemberSem}) সফলভাবে সেভ হয়েছে!`);
+    showToastMsg(`${name} (${newMemberSem}) সফলভাবে সেভ হয়েছে!`);
   };
 
   const handleAddTeacherOrCi = async (e) => {
@@ -506,7 +527,7 @@ export default function App() {
     setTeacherName('');
     setTeacherEmail('');
     setShowManageTeacherModal(false);
-    showToastMsg(`${name} (${semesterLabel}) সফলভাবে যুক্ত হয়েছেন!`);
+    showToastMsg(`${name} (${semesterLabel}) সফলভাবে যুক্ত হয়েছেন!`);
   };
 
   const handleAddModerator = async (e) => {
@@ -523,13 +544,13 @@ export default function App() {
     const updatedMods = [...moderatorRolls, roll];
     await setDoc(doc(db, 'helpdesk_settings', 'roles'), { moderators: updatedMods }, { merge: true });
     setModInputRoll('');
-    showToastMsg('নতুন মডারেটর সফলভাবে যুক্ত হয়েছে!');
+    showToastMsg('নতুন মডারেটর সফলভাবে যুক্ত হয়েছে!');
   };
 
   const handleRemoveModerator = async (roll) => {
     const updatedMods = moderatorRolls.filter(r => r !== roll);
     await setDoc(doc(db, 'helpdesk_settings', 'roles'), { moderators: updatedMods }, { merge: true });
-    showToastMsg('মডারেটর বাদ দেওয়া হয়েছে!');
+    showToastMsg('মডারেটর বাদ দেওয়া হয়েছে!');
   };
 
   const handlePostImageUpload = async (e) => {
@@ -576,14 +597,13 @@ export default function App() {
       });
       setPostTitle(''); setPostDesc(''); setPostVideo(''); setPostImages([]);
       setShowCreatePost(false);
-      showToastMsg('পোস্ট পাবলিশ হয়েছে!');
+      showToastMsg('পোস্ট পাবলিশ হয়েছে!');
     } catch (err) {
-      showToastMsg('পোস্ট করতে সমস্যা হয়েছে', 'error');
+      showToastMsg('পোস্ট করতে সমস্যা হয়েছে', 'error');
     }
     setIsSubmittingPost(false);
   };
 
-  // --- COMMENT, REPLY & REACTION HANDLERS ---
   const handleAddComment = async (e, post) => {
     e.preventDefault();
     const text = (commentTexts[post.id] || '').trim();
@@ -617,7 +637,7 @@ export default function App() {
 
     setCommentTexts(prev => ({ ...prev, [post.id]: '' }));
     setCommentImagesMap(prev => ({ ...prev, [post.id]: [] }));
-    showToastMsg('কমেন্ট যোগ করা হয়েছে!');
+    showToastMsg('কমেন্ট যোগ করা হয়েছে!');
   };
 
   const handleCommentLike = async (post, commentId) => {
@@ -657,7 +677,7 @@ export default function App() {
     await updateDoc(doc(db, 'helpdesk_posts', post.id), { comments: updatedComments });
     setReplyTexts(prev => ({ ...prev, [commentId]: '' }));
     setActiveReplyBox(null);
-    showToastMsg('রিপ্লাই দেওয়া হয়েছে!');
+    showToastMsg('রিপ্লাই দেওয়া হয়েছে!');
   };
 
   const handleAddRoutine = async (e) => {
@@ -665,25 +685,25 @@ export default function App() {
     const newSlot = { id: Date.now().toString(), day: rDay, title: rTitle, startTime: rStart, endTime: rEnd };
     const updated = [...routineList, newSlot];
     await setDoc(doc(db, 'helpdesk_settings', 'support_session'), { routines: updated }, { merge: true });
-    showToastMsg('রুটিনে নতুন সেশন যোগ হয়েছে!');
+    showToastMsg('রুটিনে নতুন সেশন যোগ হয়েছে!');
   };
 
   const handleDeleteRoutine = async (id) => {
     const updated = routineList.filter(r => r.id !== id);
     await setDoc(doc(db, 'helpdesk_settings', 'support_session'), { routines: updated }, { merge: true });
-    showToastMsg('রুটিন সেশন ডিলিট করা হয়েছে!');
+    showToastMsg('রুটিন সেশন ডিলিট করা হয়েছে!');
   };
 
   const handleUpdateSupportSettings = async (field, value) => {
     await setDoc(doc(db, 'helpdesk_settings', 'support_session'), { [field]: value }, { merge: true });
-    showToastMsg('সাপোর্ট সেটিংস আপডেট হয়েছে!');
+    showToastMsg('সাপোর্ট সেটিংস আপডেট হয়েছে!');
   };
 
   const handleJoinSupportQueue = async (e) => {
     e.preventDefault();
     if (!supportProblem.trim()) return;
     const alreadyInQueue = supportQueue.some(q => q.roll === currentUser.roll);
-    if (alreadyInQueue) return showToastMsg('তুমি ইতিমধ্যেই সিরিয়ালে আছো!', 'error');
+    if (alreadyInQueue) return showToastMsg('তুমি ইতিমধ্যেই সিরিয়ালে আছো!', 'error');
 
     await addDoc(collection(db, 'helpdesk_support_queue'), {
       roll: currentUser.roll,
@@ -694,18 +714,18 @@ export default function App() {
       joinedAt: new Date().toISOString()
     });
     setSupportProblem('');
-    showToastMsg('সাপোর্ট সিরিয়ালে যুক্ত হয়েছ!');
+    showToastMsg('সাপোর্ট সিরিয়ালে যুক্ত হয়েছ!');
   };
 
   const handleCompleteStudentSupport = async (queueItem) => {
     await deleteDoc(doc(db, 'helpdesk_support_queue', queueItem.id));
     await addDoc(collection(db, 'helpdesk_notifications'), {
       targetRoll: queueItem.roll,
-      text: `✅ তোমার লাইভ সাপোর্ট সেশন সম্পন্ন হয়েছে।`,
+      text: `✅ তোমার লাইভ সাপোর্ট সেশন সম্পন্ন হয়েছে।`,
       read: false,
       createdAt: new Date().toISOString()
     });
-    showToastMsg(`${queueItem.name}-এর সাপোর্ট সম্পন্ন মার্ক করা হয়েছে!`);
+    showToastMsg(`${queueItem.name}-এর সাপোর্ট সম্পন্ন মার্ক করা হয়েছে!`);
   };
 
   const renderRoleBadge = (roll, roleOverride) => {
@@ -767,83 +787,108 @@ export default function App() {
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার অফিশিয়াল জিমেইল *</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার অফিশিয়াল জিমেইল *</label>
                 <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="example@gmail.com"
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
-                <span className="text-[10px] text-slate-400 mt-1 block">প্রথমবার দিলে এটি এই রোলের সাথে স্থায়ীভাবে যুক্ত হবে।</span>
               </div>
-              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm cursor-pointer">
-                জিমেইল যাচাই করুন
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+                সামনে এগিয়ে যান
               </button>
             </form>
           )}
 
           {authStep === 'createPin' && (
             <form onSubmit={handleCreatePin} className="space-y-4">
-              <p className="text-xs text-emerald-700 bg-emerald-50 p-3 rounded-xl">স্বাগতম <b>{pendingUser?.name}</b>! প্রথমবার লগইনের জন্য ৬ সংখ্যার গোপন পিন সেট করুন।</p>
-              <input type="password" maxLength="6" required value={pin1} onChange={e => setPin1(e.target.value)} placeholder="নতুন ৬-ডিজিট পিন"
-                className="w-full px-4 py-3 rounded-xl border text-center text-lg tracking-widest font-bold" />
-              <input type="password" maxLength="6" required value={pin2} onChange={e => setPin2(e.target.value)} placeholder="পুনরায় পিন দিন"
-                className="w-full px-4 py-3 rounded-xl border text-center text-lg tracking-widest font-bold" />
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setAuthStep('verifyRoll')} className="px-4 py-3 rounded-xl bg-slate-100 text-xs font-bold cursor-pointer">পিছনে</button>
-                <button type="submit" className="flex-1 py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm cursor-pointer">পিন সেভ করুন</button>
+              <div className="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-800 font-medium">
+                👤 {pendingUser?.name} ({pendingUser?.roll}) — প্রথমবার লগইনের জন্য নতুন ৬ ডিজিটের সিক্রেট পিন সেট করুন।
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন দিন *</label>
+                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="যেমন: 123456"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">পিনটি পুনরায় লিখুন *</label>
+                <input type="password" required maxLength="6" value={pin2} onChange={e => setPin2(e.target.value)} placeholder="পুনরায় পিন"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+                পিন সেট ও লগইন করুন
+              </button>
             </form>
           )}
 
           {authStep === 'loginPin' && (
             <form onSubmit={handleLoginPin} className="space-y-4">
-              <p className="text-xs text-slate-600 text-center">হ্যালো <b>{pendingUser?.name}</b>, আপনার ৬-ডিজিট পিন দিন</p>
-              <input type="password" maxLength="6" required value={pin1} onChange={e => setPin1(e.target.value)} placeholder="••••••"
-                className="w-full px-4 py-3 rounded-xl border text-center text-xl tracking-[0.5em] font-bold" />
-              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">
+              <div className="p-3 bg-indigo-50 rounded-xl text-xs text-indigo-800 font-medium">
+                স্বাগতম, <b>{pendingUser?.name}</b>! আপনার সিক্রেট পিন দিয়ে প্রবেশ করুন।
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার সিক্রেট পিন *</label>
+                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="সিক্রেট পিন দিন"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
                 লগইন করুন
               </button>
-              <div className="flex justify-between items-center pt-2 text-xs">
-                <button type="button" onClick={() => setAuthStep('verifyRoll')} className="text-slate-500 hover:underline cursor-pointer">অন্য আইডি?</button>
-                <button type="button" onClick={() => { setAuthStep('forgotPinVerify'); setAuthError(''); setAuthSuccessMsg(''); }} className="text-indigo-600 font-bold hover:underline cursor-pointer">
-                  পিন ভুলে গেছেন? (Reset Pin)
+              <div className="text-center">
+                <button type="button" onClick={() => setAuthStep('forgotPinRequest')} className="text-xs text-indigo-600 hover:underline font-semibold">
+                  পিন ভুলে গেছেন? রিসেট করুন
                 </button>
               </div>
             </form>
           )}
 
-          {authStep === 'forgotPinVerify' && !generatedOtp && (
+          {authStep === 'forgotPinRequest' && (
             <form onSubmit={handleRequestPasswordReset} className="space-y-4">
-              <p className="text-xs text-slate-600">পিন রিকভার করার জন্য আপনার রোল এবং রেজিস্টার্ড জিমেইল দিন।</p>
-              <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="ক্লাস রোল (যেমন: 253203)"
-                className="w-full px-4 py-3 rounded-xl border text-sm" />
-              <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="রেজিস্টার্ড জিমেইল দিন"
-                className="w-full px-4 py-3 rounded-xl border text-sm" />
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setAuthStep('loginPin')} className="px-4 py-3 rounded-xl bg-slate-100 text-xs font-bold cursor-pointer">লগইনে ফিরুন</button>
-                <button type="submit" className="flex-1 py-3 rounded-xl bg-amber-600 text-white font-bold text-sm cursor-pointer">কোড জেনারেট করুন</button>
+              <p className="text-xs text-slate-500">আপনার রোল এবং জিমেইল দিয়ে ভেরিফিকেশন কোড নিন।</p>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">ক্লাস রোল / আইডি *</label>
+                <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="যেমন: 253203"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
               </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">অফিশিয়াল জিমেইল *</label>
+                <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} placeholder="example@gmail.com"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+                কোড পাঠান
+              </button>
+              <button type="button" onClick={() => setAuthStep('verifyRoll')} className="w-full text-center text-xs text-slate-500 hover:underline">
+                ফিরে যান
+              </button>
             </form>
           )}
 
-          {authStep === 'forgotPinVerify' && generatedOtp && (
+          {authStep === 'forgotPinVerify' && (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div className="bg-amber-50 border border-amber-300 p-3 rounded-xl text-center">
-                <span className="text-[11px] text-amber-800 font-bold block mb-1">আপনার ভেরিফিকেশন কোড (OTP):</span>
-                <span className="text-2xl font-extrabold tracking-widest text-amber-950 bg-white px-4 py-1 rounded-lg border border-amber-200 inline-block">{generatedOtp}</span>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">আপনার জিমেইলে পাঠানো ওটিপি কোড দিন *</label>
+                <input type="text" required maxLength="6" value={inputOtp} onChange={e => setInputOtp(e.target.value)} placeholder="৬ ডিজিটের কোড"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm text-center tracking-widest font-bold" />
               </div>
-              <p className="text-xs text-slate-600 text-center">উপরের কোডটি নিচে লিখে ভেরিফাই করুন।</p>
-              <input type="text" maxLength="6" required value={inputOtp} onChange={e => setInputOtp(e.target.value)} placeholder="কোড লিখুন"
-                className="w-full px-4 py-3 rounded-xl border text-center text-lg tracking-widest font-bold" />
-              <button type="submit" className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm cursor-pointer">কোড ভেরিফাই করুন</button>
+              <button type="submit" className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+                কোড ভেরিফাই করুন
+              </button>
             </form>
           )}
 
           {authStep === 'forgotPinReset' && (
             <form onSubmit={handleSaveNewPin} className="space-y-4">
-              <p className="text-xs text-emerald-700 bg-emerald-50 p-3 rounded-xl">ভেরিফিকেশন সফল! এখন নতুন পিন সেট করুন।</p>
-              <input type="password" maxLength="6" required value={pin1} onChange={e => setPin1(e.target.value)} placeholder="নতুন পিন"
-                className="w-full px-4 py-3 rounded-xl border text-center text-lg tracking-widest font-bold" />
-              <input type="password" maxLength="6" required value={pin2} onChange={e => setPin2(e.target.value)} placeholder="পুনরায় নতুন পিন"
-                className="w-full px-4 py-3 rounded-xl border text-center text-lg tracking-widest font-bold" />
-              <button type="submit" className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm cursor-pointer">নতুন পিন সেভ করুন</button>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন দিন *</label>
+                <input type="password" required maxLength="6" value={pin1} onChange={e => setPin1(e.target.value)} placeholder="নতুন পিন"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">নতুন পিন নিশ্চিত করুন *</label>
+                <input type="password" required maxLength="6" value={pin2} onChange={e => setPin2(e.target.value)} placeholder="কনফার্ম পিন"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+                পিন পরিবর্তন সম্পন্ন করুন
+              </button>
             </form>
           )}
         </div>
@@ -851,356 +896,581 @@ export default function App() {
     );
   }
 
-  const unreadNotifs = notifications.filter(n => !n.read).length;
-  const myQueueIndex = supportQueue.findIndex(q => q.roll === currentUser.roll);
-
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50" style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
-          <div onClick={handleSecretTap} className="flex items-center gap-2.5 cursor-pointer select-none">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm">
-              <MessageSquare className="w-5 h-5" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 pb-20" style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
+      {toast && (
+        <div className="fixed top-5 right-5 z-50 bg-slate-900 border border-slate-700 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in">
+          <div className={`w-3 h-3 rounded-full ${toast.type === 'error' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+          <p className="text-sm font-medium">{toast.msg}</p>
+        </div>
+      )}
+
+      <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={handleSecretTap}>
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg">
+              <GraduationCap className="w-6 h-6 text-white"/>
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base sm:text-lg text-slate-900 leading-none">CST Help Desk</span>
-                {renderRoleBadge(currentUser.roll, userInfo?.role)}
-              </div>
-              <span className="text-[10px] font-semibold text-indigo-600">Department Academic Portal</span>
+              <h1 className="text-base font-bold text-white flex items-center gap-2">
+                CST Help Desk {renderRoleBadge(currentUser.roll)}
+              </h1>
+              <p className="text-[10px] text-slate-400">Batch 24-25 | DPI</p>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button onClick={() => setActiveTab('feed')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${activeTab === 'feed' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
-              হেল্প ডেস্ক ফিড
-            </button>
-            <button onClick={() => setActiveTab('support')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${activeTab === 'support' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}>
-              <span className={`w-2 h-2 rounded-full ${liveStatus.isLive ? 'bg-emerald-500 animate-ping' : 'bg-slate-400'}`}></span>
-              লাইভ সাপোর্ট সেশন
-            </button>
-          </div>
-
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {isMainAdmin && (
-              <button onClick={() => setShowManageDirectory(true)} title="ছাত্র ও সেমিস্টার ম্যানেজ করুন"
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold cursor-pointer">
-                <UserPlus className="w-4 h-4" />
-                <span className="hidden lg:inline">ছাত্র আপডেট</span>
-              </button>
-            )}
-
-            {isMainAdmin && (
-              <button onClick={() => setShowManageTeacherModal(true)} title="শিক্ষক বা সিআই যোগ করুন"
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold cursor-pointer">
-                <GraduationCap className="w-4 h-4" />
-                <span className="hidden lg:inline">স্যার / CI যোগ</span>
-              </button>
-            )}
-
-            {isMainAdmin && (
-              <button onClick={() => setShowManageMods(true)}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold cursor-pointer">
-                <Users className="w-4 h-4" />
-                <span className="hidden lg:inline">মডারেটর</span>
-              </button>
-            )}
-
+          <div className="flex items-center gap-3">
             <div className="relative">
-              <button onClick={() => setShowNotifDropdown(!showNotifDropdown)} className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 relative cursor-pointer">
-                <Bell className="w-4 h-4" />
-                {unreadNotifs > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center">
-                    {unreadNotifs}
+              <button onClick={() => setShowNotifDropdown(!showNotifDropdown)} className="relative p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+                <Bell className="w-5 h-5"/>
+                {notifications.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">
+                    {notifications.length}
                   </span>
                 )}
               </button>
+
               {showNotifDropdown && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 z-50 overflow-hidden">
-                  <div className="px-4 py-2.5 bg-slate-50 border-b flex justify-between items-center">
-                    <span className="text-xs font-bold">নোটিফিকেশন</span>
-                    <button onClick={async () => {
-                      for (const n of notifications.filter(x => !x.read)) {
-                        await updateDoc(doc(db, 'helpdesk_notifications', n.id), { read: true });
-                      }
-                    }} className="text-[11px] text-indigo-600 font-semibold cursor-pointer">সব পড়া হয়েছে</button>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto divide-y">
-                    {notifications.length === 0 ? (
-                      <p className="p-4 text-center text-xs text-slate-400">কোনো নোটিফিকেশন নেই</p>
-                    ) : notifications.map(n => (
-                      <div key={n.id} onClick={() => updateDoc(doc(db, 'helpdesk_notifications', n.id), { read: true })}
-                        className={`p-3 text-xs cursor-pointer ${n.read ? 'opacity-60' : 'bg-indigo-50/60 font-medium'}`}>
-                        {n.text}
-                      </div>
-                    ))}
-                  </div>
+                <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-4 z-50">
+                  <h3 className="text-xs font-bold text-slate-300 mb-3 uppercase tracking-wider">রিয়েল-টাইম নোটিফিকেশন</h3>
+                  {notifications.length === 0 ? (
+                    <p className="text-xs text-slate-500 text-center py-4">কোনো নতুন নোটিফিকেশন নেই</p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {notifications.map(n => (
+                        <div key={n.id} className="p-2.5 rounded-xl bg-slate-800 text-xs text-slate-200 border border-slate-700/50">
+                          {n.text}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
-            <button onClick={() => setShowProfileModal(true)} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold cursor-pointer">
-              <div className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
-                {userInfo?.name?.charAt(0)}
+            <button onClick={() => setShowProfileModal(true)} className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-xl border border-slate-700">
+              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+                {userInfo.name.charAt(0)}
               </div>
-              <span className="max-w-[75px] truncate">{userInfo?.name}</span>
+              <span className="text-xs font-bold text-slate-200 hidden sm:inline">{userInfo.name}</span>
             </button>
 
-            <button onClick={() => setShowCreatePost(true)}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm cursor-pointer">
-              <Plus className="w-4 h-4" />
-              <span>পোস্ট</span>
+            <button onClick={handleLogout} className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400">
+              <LogOut className="w-5 h-5"/>
             </button>
           </div>
-        </div>
-
-        <div className="flex md:hidden border-t border-slate-100 bg-slate-50 px-3 py-1.5 gap-2">
-          <button onClick={() => setActiveTab('feed')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-bold ${activeTab === 'feed' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border'}`}>
-            হেল্প ডেস্ক ফিড
-          </button>
-          <button onClick={() => setActiveTab('support')}
-            className={`flex-1 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 ${activeTab === 'support' ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 border'}`}>
-            <span className={`w-2 h-2 rounded-full ${liveStatus.isLive ? 'bg-emerald-400 animate-ping' : 'bg-slate-400'}`}></span>
-            লাইভ সাপোর্ট ({supportQueue.length})
-          </button>
         </div>
       </header>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-5">
-        {activeTab === 'support' ? (
-          <div className="space-y-6">
-            <div className={`rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${liveStatus.isLive ? 'bg-gradient-to-r from-emerald-600 to-teal-600' : 'bg-gradient-to-r from-slate-700 to-slate-800'}`}>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Radio className={`w-5 h-5 ${liveStatus.isLive ? 'animate-pulse text-emerald-200' : 'text-slate-400'}`} />
-                  <span className="text-xs font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
-                    {liveStatus.isLive ? 'সাপোর্ট সেশন চলছে (LIVE)' : 'সেশন বন্ধ আছে (OFFLINE)'}
+      <nav className="bg-slate-900 border-b border-slate-800 px-4 py-2 sticky top-[65px] z-30">
+        <div className="max-w-6xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar">
+          {[
+            { id: 'feed', label: 'কোডিং ফিড & হেল্প', icon: MessageSquare },
+            { id: 'notices', label: 'নোটিশ বোর্ড', icon: Megaphone },
+            { id: 'support', label: 'লাইভ সাপোর্ট & রুটিন', icon: Radio, badge: liveStatus.isLive ? 'LIVE' : null },
+            { id: 'directory', label: 'ডিপার্টমেন্ট ডিরেক্টরি', icon: Users }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs whitespace-nowrap transition-all ${
+                  isActive ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-800/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                }`}>
+                <Icon className="w-4 h-4"/>
+                {tab.label}
+                {tab.badge && (
+                  <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white text-[9px] font-extrabold animate-pulse">
+                    {tab.badge}
                   </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        {activeTab === 'feed' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+              <div className="flex items-center gap-2 w-full md:w-auto flex-1">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500"/>
+                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="কোডিং সমস্যা বা পোস্ট খুঁজুন..."
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-800/80 border border-slate-700/60 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold">
-                  {liveStatus.isLive ? liveStatus.sessionTitle : 'এখন কোনো সাপোর্ট সেশন হচ্ছে না'}
-                </h2>
               </div>
 
-              {liveStatus.isLive && supportConfig.meetLink && (myQueueIndex === 0 || hasStaffPower) && (
-                <a href={supportConfig.meetLink} target="_blank" rel="noreferrer"
-                  className="px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold text-sm shadow-lg hover:bg-emerald-50 flex items-center gap-2 shrink-0">
-                  <Video className="w-4 h-4" /> Join Google Meet <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              )}
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end flex-wrap">
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300 font-semibold outline-none">
+                  <option value="ALL">সকল স্ট্যাটাস</option>
+                  <option value="open">Open (চলমান)</option>
+                  <option value="solved">Solved (সমাধানকৃত)</option>
+                </select>
+
+                <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
+                  className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-300 font-semibold outline-none">
+                  <option value="ALL">সকল ক্যাটাগরি</option>
+                  <option value="Coding / Programming">Coding / Programming</option>
+                  <option value="Lab Practical">Lab Practical</option>
+                  <option value="Hardware / Peripherals">Hardware / Peripherals</option>
+                  <option value="Academic Question">Academic Question</option>
+                  <option value="General Discussion">General Discussion</option>
+                </select>
+
+                <button onClick={() => setShowCreatePost(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-lg">
+                  <Plus className="w-4 h-4"/> প্রশ্ন করুন / পোস্ট দিন
+                </button>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-5">
-                {liveStatus.isLive ? (
-                  <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                    <h3 className="font-bold text-base text-slate-900 mb-3 flex items-center gap-2">
-                      <MessageSquare className="w-5 h-5 text-indigo-600" /> সাপোর্ট সেশনে প্রশ্ন জমা দিন
-                    </h3>
-
-                    {myQueueIndex !== -1 ? (
-                      <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-5 text-center space-y-2">
-                        <span className="text-xs font-bold text-indigo-600 uppercase">তোমার বর্তমান সিরিয়াল</span>
-                        <div className="text-4xl font-extrabold text-indigo-700">#{myQueueIndex + 1}</div>
-                        <p className="text-xs text-slate-600">
-                          {myQueueIndex === 0 ? '🎉 এখন তোমার পালা! মিটে জয়েন করো।' : `তোমার আগে আরও ${myQueueIndex} জন অপেক্ষা করছে।`}
-                        </p>
-                        <button onClick={() => deleteDoc(doc(db, 'helpdesk_support_queue', supportQueue[myQueueIndex].id))}
-                          className="mt-2 px-4 py-1.5 rounded-xl bg-rose-100 text-rose-700 text-xs font-bold cursor-pointer">
-                          সিরিয়াল থেকে বের হয়ে যান
-                        </button>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleJoinSupportQueue} className="space-y-3.5">
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">সাপোর্টের বিষয়</label>
-                          <select value={supportTopic} onChange={e => setSupportTopic(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm outline-none">
-                            <option>Coding / Lab Problem</option>
-                            <option>Project / Assignment Help</option>
-                            <option>Environment / Software Setup</option>
-                            <option>General Academic Guidance</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-slate-700 mb-1">তোমার প্রশ্নটি বিস্তারিত লিখো (সর্বোচ্চ ২৫০ অক্ষর) *</label>
-                          <textarea rows="3" maxLength="250" required value={supportProblem} onChange={e => setSupportProblem(e.target.value)}
-                            placeholder="প্রবলেমটা সংক্ষেপে লিখো..."
-                            className="w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none focus:border-indigo-500" />
-                          <div className="text-right text-[11px] text-slate-400">{supportProblem.length}/২৫০</div>
-                        </div>
-                        <button type="submit" className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer">
-                          সিরিয়ালে যুক্ত হোন (Submit)
-                        </button>
-                      </form>
-                    )}
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm">
-                    <Clock className="w-12 h-12 text-slate-300 mx-auto mb-2" />
-                    <h3 className="font-bold text-base text-slate-800">এখন সাপোর্ট সেশন বন্ধ রয়েছে</h3>
-                  </div>
-                )}
-
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-base text-slate-900">অপেক্ষমান শিক্ষার্থী তালিকা ({supportQueue.length} জন)</h3>
-                  </div>
-
-                  {supportQueue.length === 0 ? (
-                    <p className="text-xs text-slate-400 text-center py-6">বর্তমানে সিরিয়ালে কেউ নেই।</p>
-                  ) : (
-                    <div className="space-y-2.5">
-                      {supportQueue.map((item, idx) => (
-                        <div key={item.id} className={`p-3.5 rounded-xl border flex items-center justify-between gap-3 ${idx === 0 ? 'bg-emerald-50/70 border-emerald-200' : 'bg-slate-50'}`}>
-                          <div className="flex items-start gap-3">
-                            <span className={`w-7 h-7 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${idx === 0 ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}`}>
-                              #{idx + 1}
-                            </span>
-                            <div>
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-bold text-sm text-slate-900">{item.name}</span>
-                                <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-semibold">{item.semester}</span>
-                              </div>
-                              <p className="text-xs text-slate-700 mt-1">{item.problem}</p>
-                            </div>
-                          </div>
-
-                          {hasStaffPower && (
-                            <button onClick={() => handleCompleteStudentSupport(item)}
-                              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 shrink-0 cursor-pointer">
-                              <Check className="w-3.5 h-3.5" /> সম্পন্ন
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+            <div className="space-y-4">
+              {filteredPosts.length === 0 ? (
+                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
+                  কোনো পোস্ট বা প্রশ্ন পাওয়া যায়নি। প্রথম প্রশ্নটি আপনিই করুন!
                 </div>
-              </div>
-
-              <div className="space-y-5">
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
-                  <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-indigo-600" /> সাপ্তাহিক সাপোর্ট রুটিন
-                  </h3>
-                  
-                  {routineList.length === 0 ? (
-                    <p className="text-xs text-slate-400">কোনো রুটিন সেট করা হয়নি।</p>
-                  ) : (
-                    <div className="space-y-2">
-                      {routineList.map(r => (
-                        <div key={r.id} className="p-3 rounded-xl bg-slate-50 border flex items-center justify-between text-xs">
-                          <div>
-                            <div className="font-bold text-indigo-700">{DAYS_BN[r.day]} ({r.day})</div>
-                            <div className="font-semibold text-slate-800">{r.title}</div>
-                            <div className="text-slate-500">{formatTime12h(r.startTime)} - {formatTime12h(r.endTime)}</div>
-                          </div>
-                          {hasStaffPower && (
-                            <button onClick={() => handleDeleteRoutine(r.id)} className="text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg cursor-pointer">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {hasStaffPower && (
-                    <form onSubmit={handleAddRoutine} className="pt-3 border-t space-y-2.5">
-                      <span className="text-xs font-bold text-slate-800 block">নতুন রুটিন যোগ করুন</span>
-                      <div className="grid grid-cols-2 gap-2">
-                        <select value={rDay} onChange={e => setRDay(e.target.value)} className="px-2.5 py-1.5 rounded-xl border text-xs bg-slate-50">
-                          {DAYS_OF_WEEK.map(d => <option key={d} value={d}>{DAYS_BN[d]}</option>)}
-                        </select>
-                        <input type="text" value={rTitle} onChange={e => setRTitle(e.target.value)} placeholder="সেশনের নাম" className="px-2.5 py-1.5 rounded-xl border text-xs bg-slate-50" />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-[10px] text-slate-500 block mb-0.5">শুরুর সময়</label>
-                          <input type="time" value={rStart} onChange={e => setRStart(e.target.value)} className="w-full px-2.5 py-1.5 rounded-xl border text-xs bg-slate-50" />
-                        </div>
-                        <div>
-                          <label className="text-[10px] text-slate-500 block mb-0.5">শেষ সময়</label>
-                          <input type="time" value={rEnd} onChange={e => setREnd(e.target.value)} className="w-full px-2.5 py-1.5 rounded-xl border text-xs bg-slate-50" />
-                        </div>
-                      </div>
-                      <button type="submit" className="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs cursor-pointer">
-                        + রুটিন সেশন সেভ করুন
-                      </button>
-                    </form>
-                  )}
-                </div>
-
-                {hasStaffPower && (
-                  <div className="bg-amber-50/80 rounded-2xl border border-amber-200 p-5 space-y-4">
-                    <h4 className="font-bold text-sm text-amber-950">মডারেটর / মেন্টর কন্ট্রোল প্যানেল</h4>
-                    <div>
-                      <label className="block text-xs font-bold text-amber-900 mb-1">সেশন স্ট্যাটাস</label>
-                      <select value={supportConfig.forceStatus} onChange={e => handleUpdateSupportSettings('forceStatus', e.target.value)}
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-amber-300 text-xs font-bold">
-                        <option value="auto">অটোমেটিক (রুটিন অনুযায়ী)</option>
-                        <option value="open">সরাসরি চালু রাখুন (Force Open)</option>
-                        <option value="closed">বন্ধ রাখুন (Force Close)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-amber-900 mb-1">Google Meet লিংক</label>
-                      <input type="url" value={supportConfig.meetLink}
-                        onChange={e => setSupportConfig({ ...supportConfig, meetLink: e.target.value })}
-                        onBlur={e => handleUpdateSupportSettings('meetLink', e.target.value)}
-                        placeholder="https://meet.google.com/..."
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-amber-300 text-xs" />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-5">
-            {/* NOTICE BOARD SECTION */}
-            <div className="bg-amber-50/90 border border-amber-200 rounded-2xl p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Megaphone className="w-5 h-5 text-amber-600" />
-                  <h3 className="font-bold text-sm sm:text-base text-amber-950">ডিপার্টমেন্ট নোটিশ বোর্ড</h3>
-                </div>
-                {hasStaffPower && (
-                  <button onClick={() => { setNoticeImages([]); setShowAddNotice(true); }} className="px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold cursor-pointer">
-                    + নতুন নোটিশ
-                  </button>
-                )}
-              </div>
-              <div className="space-y-3">
-                {notices.length === 0 ? (
-                  <p className="text-xs text-amber-800/70 italic">বর্তমানে কোনো নতুন নোটিশ নেই।</p>
-                ) : notices.map(n => {
-                  const nImgs = Array.isArray(n.images) ? n.images : (n.imageUrl ? [n.imageUrl] : []);
+              ) : (
+                filteredPosts.map(post => {
+                  const isLiked = (post.likes || []).includes(currentUser.roll);
+                  const canDelete = hasStaffPower || post.authorRoll === currentUser.roll;
                   return (
-                    <div key={n.id} className="bg-white/95 p-3.5 rounded-xl border border-amber-200 space-y-2">
-                      <div className="flex justify-between items-start gap-2">
-                        <div>
-                          <h4 className="font-bold text-xs sm:text-sm text-amber-950">{n.title}</h4>
-                          <p className="text-xs text-amber-900 mt-0.5 whitespace-pre-wrap">{n.body}</p>
+                    <div key={post.id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center">
+                            {post.authorName.charAt(0)}
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                              {post.authorName} {renderRoleBadge(post.authorRoll, post.authorRole)}
+                            </h4>
+                            <p className="text-[10px] text-slate-400">রোল: {post.authorRoll} • {post.authorSemester}</p>
+                          </div>
                         </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2.5 py-1 rounded-xl text-[10px] font-bold ${post.status === 'solved' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}`}>
+                            {post.status === 'solved' ? 'Solved' : 'Open'}
+                          </span>
+                          {canDelete && (
+                            <button onClick={async () => {
+                              if (window.confirm('পোস্টটি ডিলিট করতে চান?')) {
+                                await deleteDoc(doc(db, 'helpdesk_posts', post.id));
+                                showToastMsg('পোস্ট ডিলিট করা হয়েছে!');
+                              }
+                            }} className="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400">
+                              <Trash2 className="w-4 h-4"/>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div>
+                        <span className="inline-block px-2.5 py-0.5 rounded-md bg-indigo-600/10 text-indigo-400 text-[10px] font-bold mb-2">
+                          {post.category}
+                        </span>
+                        <h3 className="text-base font-bold text-white mb-2">{post.title}</h3>
+                        <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">{post.description}</p>
+                      </div>
+
+                      {post.images && post.images.length > 0 && (
+                        <div className={`grid gap-2 ${post.images.length === 1 ? 'grid-cols-1' : post.images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                          {post.images.map((img, idx) => (
+                            <img key={idx} src={img} alt="attachment" onClick={() => setLightboxImg(img)}
+                              className="w-full h-48 object-cover rounded-2xl cursor-pointer hover:opacity-90 border border-slate-800" />
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-4 pt-3 border-t border-slate-800 text-xs">
+                        <button onClick={async () => {
+                          const likes = post.likes || [];
+                          const newLikes = isLiked ? likes.filter(r => r !== currentUser.roll) : [...likes, currentUser.roll];
+                          await updateDoc(doc(db, 'helpdesk_posts', post.id), { likes: newLikes });
+                        }} className={`flex items-center gap-1.5 font-bold ${isLiked ? 'text-indigo-400' : 'text-slate-400 hover:text-white'}`}>
+                          <ThumbsUp className="w-4 h-4"/> {post.likes?.length || 0} লাইক
+                        </button>
+
                         {hasStaffPower && (
-                          <button onClick={() => deleteDoc(doc(db, 'helpdesk_notices', n.id))} className="text-rose-600 p-1 cursor-pointer shrink-0">
-                            <Trash2 className="w-4 h-4" />
+                          <button onClick={async () => {
+                            const newStatus = post.status === 'solved' ? 'open' : 'solved';
+                            await updateDoc(doc(db, 'helpdesk_posts', post.id), { status: newStatus });
+                            showToastMsg(`পোস্টটি ${newStatus} করা হয়েছে!`);
+                          }} className="text-indigo-400 hover:underline font-bold">
+                            স্ট্যাটাস পরিবর্তন ({post.status === 'solved' ? 'Open করুন' : 'Solved করুন'})
                           </button>
                         )}
                       </div>
 
-                      {nImgs.length > 0 && (
-                        <div className={`grid gap-2 pt-1 ${nImgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3'}`}>
-                          {nImgs.map((img, i) => (
-                            <img key={i} src={img} onClick={() => setLightboxImg(img)} alt="Notice Attachment"
-                              className="w-full max-h-56 object-cover rounded-lg border cursor-zoom-in" />
+                      <div className="space-y-3 pt-3 border-t border-slate-800">
+                        <h5 className="text-xs font-bold text-slate-400">মন্তব্যসমূহ ({post.comments?.length || 0})</h5>
+
+                        {(post.comments || []).map(comment => {
+                          const isCommentLiked = (comment.likes || []).includes(currentUser.roll);
+                          return (
+                            <div key={comment.id} className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold text-xs flex items-center justify-center">
+                                    {comment.authorName.charAt(0)}
+                                  </div>
+                                  <div>
+                                    <h6 className="text-xs font-bold text-white flex items-center gap-1.5">
+                                      {comment.authorName} {renderRoleBadge(comment.authorRoll, comment.authorRole)}
+                                    </h6>
+                                    <p className="text-[9px] text-slate-400">রোল: {comment.authorRoll}</p>
+                                  </div>
+                                </div>
+
+                                {(hasStaffPower || comment.authorRoll === currentUser.roll) && (
+                                  <button onClick={async () => {
+                                    const updated = post.comments.filter(c => c.id !== comment.id);
+                                    await updateDoc(doc(db, 'helpdesk_posts', post.id), { comments: updated });
+                                    showToastMsg('কমেন্ট ডিলিট করা হয়েছে!');
+                                  }} className="text-slate-500 hover:text-rose-400 text-xs">
+                                    <Trash2 className="w-3.5 h-3.5"/>
+                                  </button>
+                                )}
+                              </div>
+
+                              <p className="text-xs text-slate-200 whitespace-pre-wrap pl-9">{comment.text}</p>
+
+                              {comment.images && comment.images.length > 0 && (
+                                <div className="pl-9 grid grid-cols-3 gap-2 mt-2">
+                                  {comment.images.map((img, i) => (
+                                    <img key={i} src={img} alt="comment-att" onClick={() => setLightboxImg(img)}
+                                      className="w-full h-24 object-cover rounded-xl cursor-pointer border border-slate-800" />
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="pl-9 flex items-center gap-4 pt-1 text-[11px]">
+                                <button onClick={() => handleCommentLike(post, comment.id)} className={`flex items-center gap-1 font-bold ${isCommentLiked ? 'text-indigo-400' : 'text-slate-400'}`}>
+                                  <ThumbsUp className="w-3 h-3"/> {comment.likes?.length || 0}
+                                </button>
+                                <button onClick={() => setActiveReplyBox(activeReplyBox === comment.id ? null : comment.id)} className="text-indigo-400 font-bold hover:underline">
+                                  রিপ্লাই ({comment.replies?.length || 0})
+                                </button>
+                              </div>
+
+                              {comment.replies && comment.replies.length > 0 && (
+                                <div className="pl-9 space-y-2 mt-2 pt-2 border-t border-slate-800/60">
+                                  {comment.replies.map(reply => (
+                                    <div key={reply.id} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                                          <CornerDownRight className="w-3 h-3 text-indigo-400"/> {reply.authorName} {renderRoleBadge(reply.authorRoll, reply.authorRole)}
+                                        </span>
+                                        {(hasStaffPower || reply.authorRoll === currentUser.roll) && (
+                                          <button onClick={async () => {
+                                            const updatedComments = post.comments.map(c => {
+                                              if (c.id === comment.id) {
+                                                return { ...c, replies: c.replies.filter(r => r.id !== reply.id) };
+                                              }
+                                              return c;
+                                            });
+                                            await updateDoc(doc(db, 'helpdesk_posts', post.id), { comments: updatedComments });
+                                            showToastMsg('রিপ্লাই ডিলিট করা হয়েছে!');
+                                          }} className="text-slate-500 hover:text-rose-400">
+                                            <Trash2 className="w-3 h-3"/>
+                                          </button>
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-slate-300 pl-4">{reply.text}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {activeReplyBox === comment.id && (
+                                <form onSubmit={e => handleAddReply(e, post, comment.id)} className="pl-9 flex gap-2 mt-2">
+                                  <input type="text" value={replyTexts[comment.id] || ''} onChange={e => setReplyTexts(prev => ({ ...prev, [comment.id]: e.target.value }))}
+                                    placeholder="রিপ্লাই লিখুন..." className="flex-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
+                                  <button type="submit" className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
+                                    রিপ্লাই দিন
+                                  </button>
+                                </form>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        <form onSubmit={e => handleAddComment(e, post)} className="space-y-2 pt-2">
+                          <div className="flex gap-2">
+                            <input type="text" value={commentTexts[post.id] || ''} onChange={e => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
+                              placeholder="একটি মন্তব্য করুন অথবা ছবি যুক্ত করুন..." className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none focus:border-indigo-500" />
+                            <label className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl cursor-pointer flex items-center justify-center">
+                              <ImageIcon className="w-4 h-4"/>
+                              <input type="file" accept="image/*" multiple onChange={async (e) => {
+                                const files = Array.from(e.target.files);
+                                const compressed = await Promise.all(files.map(f => compressImageFile(f)));
+                                setCommentImagesMap(prev => ({ ...prev, [post.id]: [...(prev[post.id] || []), ...compressed].slice(0, 6) }));
+                                e.target.value = '';
+                              }} className="hidden" />
+                            </label>
+                            <button type="submit" className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
+                              কমেন্ট
+                            </button>
+                          </div>
+
+                          {commentImagesMap[post.id] && commentImagesMap[post.id].length > 0 && (
+                            <div className="flex gap-2 flex-wrap pt-1">
+                              {commentImagesMap[post.id].map((img, idx) => (
+                                <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-700">
+                                  <img src={img} alt="preview" className="w-full h-full object-cover" />
+                                  <button type="button" onClick={() => {
+                                    const filtered = commentImagesMap[post.id].filter((_, i) => i !== idx);
+                                    setCommentImagesMap(prev => ({ ...prev, [post.id]: filtered }));
+                                  }} className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
+                                    ×
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </form>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'notices' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-white">ডিপার্টমেন্ট নোটিশ বোর্ড</h2>
+                <p className="text-xs text-slate-400 mt-0.5">অফিশিয়াল ক্লাস নোটিশ ও গুরুত্বপূর্ণ ঘোষণা</p>
+              </div>
+              {hasStaffPower && (
+                <button onClick={() => setShowAddNotice(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow-lg">
+                  <Plus className="w-4 h-4"/> নোটিশ দিন
+                </button>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              {notices.length === 0 ? (
+                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center text-slate-500">
+                  কোনো নোটিশ নেই।
+                </div>
+              ) : (
+                notices.map(notice => (
+                  <div key={notice.id} className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center">
+                          <Megaphone className="w-5 h-5"/>
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-white">{notice.authorName}</h4>
+                          <p className="text-[10px] text-slate-400">{new Date(notice.createdAt).toLocaleString('bn-BD')}</p>
+                        </div>
+                      </div>
+
+                      {hasStaffPower && (
+                        <button onClick={async () => {
+                          if (window.confirm('নোটিশটি ডিলিট করতে চান?')) {
+                            await deleteDoc(doc(db, 'helpdesk_notices', notice.id));
+                            showToastMsg('নোটিশ ডিলিট করা হয়েছে!');
+                          }
+                        }} className="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400">
+                          <Trash2 className="w-4 h-4"/>
+                        </button>
+                      )}
+                    </div>
+
+                    <h3 className="text-base font-bold text-white">{notice.title}</h3>
+                    <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">{notice.description}</p>
+
+                    {notice.images && notice.images.length > 0 && (
+                      <div className={`grid gap-2 ${notice.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                        {notice.images.map((img, idx) => (
+                          <img key={idx} src={img} alt="notice-att" onClick={() => setLightboxImg(img)}
+                            className="w-full h-56 object-cover rounded-2xl cursor-pointer border border-slate-800" />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'support' && (
+          <div className="space-y-6">
+            <div className={`rounded-3xl p-6 border shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 ${liveStatus.isLive ? 'bg-gradient-to-r from-indigo-900/80 to-purple-900/80 border-indigo-500/50' : 'bg-slate-900 border-slate-800'}`}>
+              <div className="space-y-2 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <span className={`w-3 h-3 rounded-full ${liveStatus.isLive ? 'bg-emerald-500 animate-ping' : 'bg-slate-500'}`} />
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-300">
+                    {liveStatus.isLive ? 'লাইভ সাপোর্ট সেশন চালু আছে' : 'বর্তমানে কোনো লাইভ সেশন নেই'}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-white">{liveStatus.isLive ? liveStatus.sessionTitle : 'নির্ধারিত রুটিন অনুযায়ী সাপোর্ট সেশন অনুষ্ঠিত হয়'}</h2>
+                <p className="text-xs text-slate-300">{liveStatus.isLive ? `সময়: ${liveStatus.timeRange}` : 'নিচে রুটিন চেক করুন এবং সিরিয়ালে নাম যুক্ত করুন।'}</p>
+              </div>
+
+              {liveStatus.isLive && supportConfig.meetLink && (
+                <a href={supportConfig.meetLink} target="_blank" rel="noopener noreferrer"
+                  className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl flex items-center gap-2 text-sm whitespace-nowrap">
+                  <Video className="w-5 h-5"/> গুগল মিট জয়েন করুন <ExternalLink className="w-4 h-4"/>
+                </a>
+              )}
+            </div>
+
+            {hasStaffPower && (
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-indigo-400"/> লাইভ সাপোর্ট কন্ট্রোল প্যানেল
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 mb-1">গুগল মিট লিংক সেট করুন</label>
+                    <div className="flex gap-2">
+                      <input type="text" defaultValue={supportConfig.meetLink} onBlur={e => handleUpdateSupportSettings('meetLink', e.target.value)}
+                        placeholder="https://meet.google.com/xxx-xxxx-xxx" className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 mb-1">সেশন স্ট্যাটাস ফোর্স কন্ট্রোল</label>
+                    <select value={supportConfig.forceStatus} onChange={e => handleUpdateSupportSettings('forceStatus', e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 font-semibold outline-none">
+                      <option value="auto">অটো (রুটিন অনুযায়ী)</option>
+                      <option value="open">ফোর্স ওপেন (সব সময় লাইভ)</option>
+                      <option value="closed">ফোর্স ক্লোজড (বন্ধ রাখুন)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Clock className="w-4 h-4 text-indigo-400"/> সাপোর্ট সিরিয়ালে নাম লিখুন
+              </h3>
+
+              <form onSubmit={handleJoinSupportQueue} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 mb-1">সমস্যার বিষয় / টপিক *</label>
+                    <select value={supportTopic} onChange={e => setSupportTopic(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                      <option value="Coding / Lab Problem">Coding / Lab Problem</option>
+                      <option value="C Programming Debugging">C Programming Debugging</option>
+                      <option value="Data Structures & Algorithms">Data Structures & Algorithms</option>
+                      <option value="HTML / Web Lab">HTML / Web Lab</option>
+                      <option value="General Academic Help">General Academic Help</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 mb-1">আপনার সমস্যা সংক্ষেপে লিখুন *</label>
+                    <input type="text" required value={supportProblem} onChange={e => setSupportProblem(e.target.value)}
+                      placeholder="যেমন: পয়েন্টার লজিক বুঝতে পারছি না..." className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                  </div>
+                </div>
+
+                <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
+                  সাপোর্ট সিরিয়ালে নাম যুক্ত করুন
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+              <h3 className="text-sm font-bold text-white">বর্তমান সাপোর্ট সিরিয়াল ({supportQueue.length})</h3>
+
+              {supportQueue.length === 0 ? (
+                <p className="text-xs text-slate-500 py-6 text-center">বর্তমানে কেউ সিরিয়ালে নেই।</p>
+              ) : (
+                <div className="space-y-3">
+                  {supportQueue.map((item, index) => (
+                    <div key={item.id} className="p-4 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+                          #{index + 1}
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-bold text-white">{item.name} (রোল: {item.roll})</h4>
+                          <p className="text-xs text-indigo-300 font-semibold mt-0.5">টপিক: {item.topic}</p>
+                          <p className="text-xs text-slate-300 mt-1">সমস্যা: {item.problem}</p>
+                        </div>
+                      </div>
+
+                      {hasStaffPower && (
+                        <button onClick={() => handleCompleteStudentSupport(item)} className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs whitespace-nowrap shadow">
+                          সম্পন্ন করুন
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-indigo-400"/> সাপ্তাহিক সাপোর্ট রুটিন
+                </h3>
+              </div>
+
+              {hasStaffPower && (
+                <form onSubmit={handleAddRoutine} className="p-4 rounded-2xl bg-slate-800 border border-slate-700 grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">বার</label>
+                    <select value={rDay} onChange={e => setRDay(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                      {DAYS_OF_WEEK.map(d => <option key={d} value={d}>{DAYS_BN[d]}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">সেশনের নাম</label>
+                    <input type="text" value={rTitle} onChange={e => setRTitle(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">শুরু</label>
+                    <input type="time" value={rStart} onChange={e => setRStart(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 mb-1">শেষ</label>
+                    <input type="time" value={rEnd} onChange={e => setREnd(e.target.value)} className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                  </div>
+                  <button type="submit" className="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
+                    রুটিন যোগ করুন
+                  </button>
+                </form>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {DAYS_OF_WEEK.map(day => {
+                  const dayRoutines = routineList.filter(r => r.day === day);
+                  return (
+                    <div key={day} className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                      <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">{DAYS_BN[day]} ({day})</h4>
+                      {dayRoutines.length === 0 ? (
+                        <p className="text-xs text-slate-500">কোনো সেশন নেই</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {dayRoutines.map(r => (
+                            <div key={r.id} className="p-2.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between text-xs">
+                              <div>
+                                <p className="font-bold text-white">{r.title}</p>
+                                <p className="text-[10px] text-slate-400">{formatTime12h(r.startTime)} - {formatTime12h(r.endTime)}</p>
+                              </div>
+                              {hasStaffPower && (
+                                <button onClick={() => handleDeleteRoutine(r.id)} className="text-slate-500 hover:text-rose-400">
+                                  <Trash2 className="w-3.5 h-3.5"/>
+                                </button>
+                              )}
+                            </div>
                           ))}
                         </div>
                       )}
@@ -1209,414 +1479,185 @@ export default function App() {
                 })}
               </div>
             </div>
+          </div>
+        )}
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                    placeholder="খুঁজুন..." className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border text-xs sm:text-sm outline-none" />
-                </div>
-                <select value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-50 border text-xs sm:text-sm font-medium">
-                  <option value="ALL">সব ক্যাটাগরি</option>
-                  <option value="Coding / Programming">💻 Coding / Programming</option>
-                  <option value="Study & Notes">📚 Study & Notes</option>
-                  <option value="Tech & Software">🛠️ Tech & Software</option>
-                  <option value="General Discussion">💬 General Discussion</option>
-                </select>
-                <select value={semesterFilter} onChange={e => setSemesterFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-50 border text-xs sm:text-sm font-medium">
-                  <option value="ALL">সব সেমিস্টার ও শিক্ষক</option>
-                  <option value="1st Semester">1st Semester</option>
-                  <option value="2nd Semester">2nd Semester</option>
-                  <option value="3rd Semester">3rd Semester</option>
-                  <option value="4th Semester">4th Semester</option>
-                  <option value="5th Semester">5th Semester</option>
-                  <option value="6th Semester">6th Semester</option>
-                  <option value="7th Semester">7th Semester</option>
-                  <option value="8th Semester">8th Semester</option>
-                  <option value="Faculty / Teacher">Teachers / Sir</option>
-                  <option value="Chief Instructor (CI)">CI Sir</option>
-                </select>
+        {activeTab === 'directory' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-white">ডিপার্টমেন্ট মেম্বার ডিরেক্টরি</h2>
+                <p className="text-xs text-slate-400 mt-0.5">CST Batch 24-25 এবং শিক্ষকবৃন্দ</p>
               </div>
+
+              {hasStaffPower && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button onClick={() => setShowManageDirectory(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
+                    <UserPlus className="w-4 h-4"/> ছাত্র / মেম্বার যোগ করুন
+                  </button>
+                  <button onClick={() => setShowManageTeacherModal(true)} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
+                    <Award className="w-4 h-4"/> শিক্ষক / CI যোগ করুন
+                  </button>
+                  <button onClick={() => setShowManageMods(true)} className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2.5 rounded-xl text-white font-bold text-xs shadow">
+                    <ShieldCheck className="w-4 h-4"/> মডারেটর ম্যানেজ
+                  </button>
+                </div>
+              )}
             </div>
 
-            <div className="space-y-4">
-              {filteredPosts.length === 0 ? (
-                <div className="bg-white rounded-2xl border p-10 text-center text-slate-500 text-sm">কোনো পোস্ট পাওয়া যায়নি।</div>
-              ) : filteredPosts.map(post => {
-                const postImgs = Array.isArray(post.images) ? post.images : [];
-                const isSolved = post.status === 'solved';
-                const likes = post.likes || [];
-                const isLiked = likes.includes(currentUser.roll);
-
-                return (
-                  <div key={post.id} className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">
-                          {post.authorName?.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="font-bold text-sm text-slate-900">{post.authorName}</span>
-                            {renderRoleBadge(post.authorRoll, post.authorRole)}
-                          </div>
-                          <div className="text-[11px] text-slate-400">{timeAgo(post.createdAt)} &bull; <span className="text-indigo-600 font-semibold">{post.category}</span> ({post.authorSemester || '4th Semester'})</div>
-                        </div>
-                      </div>
-
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${isSolved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                        {isSolved ? <><CheckCircle2 className="w-3.5 h-3.5" /> সমাধান হয়েছে</> : <><Clock className="w-3.5 h-3.5" /> ওপেন</>}
-                      </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {Object.entries(membersDirectory).map(([roll, member]) => (
+                <div key={roll} className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-xl space-y-3 flex flex-col justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 text-indigo-400 font-bold text-base flex items-center justify-center">
+                      {member.name.charAt(0)}
                     </div>
-
                     <div>
-                      <h3 className="font-bold text-base sm:text-lg text-slate-900 mb-1">{post.title}</h3>
-                      <p className="text-sm text-slate-700 whitespace-pre-wrap">{post.description}</p>
-                      {postImgs.length > 0 && (
-                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {postImgs.map((img, idx) => (
-                            <img key={idx} src={img} onClick={() => setLightboxImg(img)} alt="Attachment"
-                              className="w-full max-h-56 object-cover rounded-xl border cursor-zoom-in" />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t text-xs">
-                      <button onClick={async () => {
-                        const updatedLikes = isLiked ? likes.filter(r => r !== currentUser.roll) : [...likes, currentUser.roll];
-                        await updateDoc(doc(db, 'helpdesk_posts', post.id), { likes: updatedLikes });
-                      }} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold cursor-pointer ${isLiked ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>
-                        <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-600' : ''}`} /> পছন্দ ({likes.length})
-                      </button>
-
-                      {(currentUser.roll === post.authorRoll || hasStaffPower) && (
-                        <button onClick={() => updateDoc(doc(db, 'helpdesk_posts', post.id), { status: isSolved ? 'open' : 'solved' })}
-                          className="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold cursor-pointer">
-                          {isSolved ? 'ওপেন করুন' : 'সমাধান হয়েছে মার্ক করুন'}
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Facebook-style Comments, Reactions & Replies Section */}
-                    <div className="space-y-3 pt-3 border-t">
-                      {(post.comments || []).map((c, cIdx) => {
-                        const cImgs = Array.isArray(c.images) ? c.images : [];
-                        const cLikes = c.likes || [];
-                        const isCLiked = cLikes.includes(currentUser.roll);
-                        const replies = c.replies || [];
-
-                        return (
-                          <div key={c.id || cIdx} className="bg-slate-50 p-3.5 rounded-2xl border text-xs space-y-2.5">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-slate-900">{c.authorName}</span>
-                                {renderRoleBadge(c.authorRoll, c.authorRole)}
-                              </div>
-                              <span className="text-[10px] text-slate-400">{timeAgo(c.createdAt)}</span>
-                            </div>
-
-                            <p className="text-slate-800 whitespace-pre-wrap">{c.text}</p>
-
-                            {cImgs.length > 0 && (
-                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
-                                {cImgs.map((img, i) => (
-                                  <img key={i} src={img} onClick={() => setLightboxImg(img)} alt="Comment Attachment"
-                                    className="w-full max-h-40 object-cover rounded-lg border cursor-zoom-in" />
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Comment Actions (Like, Reply, Count) */}
-                            <div className="flex items-center gap-4 pt-1 text-[11px] font-bold text-slate-600">
-                              <button onClick={() => handleCommentLike(post, c.id)}
-                                className={`flex items-center gap-1 hover:text-indigo-600 cursor-pointer ${isCLiked ? 'text-indigo-600' : ''}`}>
-                                <ThumbsUp className="w-3.5 h-3.5" /> ভালোলাগা {cLikes.length > 0 && `(${cLikes.length})`}
-                              </button>
-                              <button onClick={() => setActiveReplyBox(activeReplyBox === c.id ? null : c.id)}
-                                className="hover:text-indigo-600 cursor-pointer">
-                                জবাব দিন (Reply)
-                              </button>
-                            </div>
-
-                            {/* Replies List */}
-                            {replies.length > 0 && (
-                              <div className="pl-4 sm:pl-6 pt-2 space-y-2 border-l-2 border-indigo-200">
-                                {replies.map((r, rIdx) => (
-                                  <div key={r.id || rIdx} className="bg-white p-2.5 rounded-xl border text-xs space-y-1">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1">
-                                        <CornerDownRight className="w-3 h-3 text-indigo-500" />
-                                        <span className="font-bold text-slate-900">{r.authorName}</span>
-                                        {renderRoleBadge(r.authorRoll, r.authorRole)}
-                                      </div>
-                                      <span className="text-[9px] text-slate-400">{timeAgo(r.createdAt)}</span>
-                                    </div>
-                                    <p className="text-slate-700 pl-4">{r.text}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Reply Input Box */}
-                            {activeReplyBox === c.id && (
-                              <form onSubmit={e => handleAddReply(e, post, c.id)} className="pt-2 flex gap-2">
-                                <input type="text" required value={replyTexts[c.id] || ''}
-                                  onChange={e => setReplyTexts(prev => ({ ...prev, [c.id]: e.target.value }))}
-                                  placeholder={`${c.authorName}-কে জবাব দিন...`}
-                                  className="flex-1 px-3 py-1.5 rounded-xl bg-white border text-xs outline-none focus:border-indigo-500" />
-                                <button type="submit" className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs cursor-pointer">
-                                  রিপ্লাই
-                                </button>
-                              </form>
-                            )}
-                          </div>
-                        );
-                      })}
-
-                      {/* Main Comment Input Box */}
-                      <form onSubmit={e => handleAddComment(e, post)} className="space-y-2 pt-2">
-                        <textarea rows="2" value={commentTexts[post.id] || ''}
-                          onChange={e => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
-                          placeholder="ফেসবুকের মতো কমেন্ট লিখুন..."
-                          className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border text-xs outline-none focus:border-indigo-500" />
-                        
-                        <div className="flex items-center justify-between">
-                          <label className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs cursor-pointer hover:bg-indigo-100 transition">
-                            <ImageIcon className="w-4 h-4" /> ছবি যুক্ত করুন
-                            <input type="file" accept="image/*" multiple className="hidden"
-                              onChange={async e => {
-                                const files = Array.from(e.target.files);
-                                const compressed = await Promise.all(files.map(f => compressImageFile(f)));
-                                setCommentImagesMap(prev => ({
-                                  ...prev,
-                                  [post.id]: [...(prev[post.id] || []), ...compressed].slice(0, 3)
-                                }));
-                                e.target.value = '';
-                              }} />
-                          </label>
-                          <button type="submit" className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs cursor-pointer shadow-sm">
-                            কমেন্ট করুন
-                          </button>
-                        </div>
-
-                        {/* Comment Image Previews */}
-                        {(commentImagesMap[post.id] || []).length > 0 && (
-                          <div className="grid grid-cols-4 gap-2 pt-1">
-                            {(commentImagesMap[post.id] || []).map((img, idx) => (
-                              <div key={idx} className="relative">
-                                <img src={img} className="h-14 w-full object-cover rounded-lg border" alt="Preview" />
-                                <button type="button" onClick={() => setCommentImagesMap(prev => ({
-                                  ...prev,
-                                  [post.id]: prev[post.id].filter((_, i) => i !== idx)
-                                }))} className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px]">×</button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </form>
+                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                        {member.name} {renderRoleBadge(roll, member.role)}
+                      </h4>
+                      <p className="text-xs text-slate-400 mt-0.5">রোল: {roll}</p>
+                      <p className="text-[10px] text-slate-500">{member.semester}</p>
                     </div>
                   </div>
-                );
-              })}
+
+                  <div className="pt-3 border-t border-slate-800 text-xs text-slate-300 flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-indigo-400"/>
+                    <span className="truncate">{member.email}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
       </main>
 
-      {/* STUDENT & SEMESTER MANAGEMENT MODAL */}
-      {showManageDirectory && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      {showCreatePost && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-slate-900">ছাত্র যোগ বা সেমিস্টার আপডেট করুন</h3>
-              <button onClick={() => setShowManageDirectory(false)} className="cursor-pointer"><X className="w-5 h-5" /></button>
+              <h3 className="text-base font-bold text-white">নতুন প্রশ্ন বা পোস্ট তৈরি করুন</h3>
+              <button onClick={() => setShowCreatePost(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5"/>
+              </button>
             </div>
-            <form onSubmit={handleAddMemberToDirectory} className="space-y-3">
+
+            <form onSubmit={handleCreatePost} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ক্লাস রোল / আইডি *</label>
-                <input type="text" required value={newMemberId} onChange={e => setNewMemberId(e.target.value)} placeholder="যেমন: 201605"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">শিক্ষার্থীর নাম *</label>
-                <input type="text" required value={newMemberName} onChange={e => setNewMemberName(e.target.value)} placeholder="নাম লিখুন"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={newMemberEmail} onChange={e => setNewMemberEmail(e.target.value)} placeholder="student@gmail.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">সেমিস্টার সিলেক্ট করুন *</label>
-                <select value={newMemberSem} onChange={e => setNewMemberSem(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white font-medium">
-                  <option value="1st Semester">1st Semester</option>
-                  <option value="2nd Semester">2nd Semester</option>
-                  <option value="3rd Semester">3rd Semester</option>
-                  <option value="4th Semester">4th Semester</option>
-                  <option value="5th Semester">5th Semester</option>
-                  <option value="6th Semester">6th Semester</option>
-                  <option value="7th Semester">7th Semester</option>
-                  <option value="8th Semester">8th Semester</option>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ক্যাটাগরি *</label>
+                <select value={postCategory} onChange={e => setPostCategory(e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                  <option value="Coding / Programming">Coding / Programming</option>
+                  <option value="Lab Practical">Lab Practical</option>
+                  <option value="Hardware / Peripherals">Hardware / Peripherals</option>
+                  <option value="Academic Question">Academic Question</option>
+                  <option value="General Discussion">General Discussion</option>
                 </select>
               </div>
-              <button type="submit" className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs cursor-pointer">
-                সেভ বা আপডেট করুন
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">শিরোনাম *</label>
+                <input type="text" required value={postTitle} onChange={e => setPostTitle(e.target.value)} placeholder="যেমন: সি প্রোগ্রামিং পয়েন্টার এরর..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">বিস্তারিত বর্ণনা *</label>
+                <textarea required rows="4" value={postDesc} onChange={e => setPostDesc(e.target.value)} placeholder="আপনার সমস্যা বা আলোচনা বিস্তারিত লিখুন..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৫টি)</label>
+                <input type="file" accept="image/*" multiple onChange={handlePostImageUpload}
+                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
+              </div>
+
+              {postImages.length > 0 && (
+                <div className="flex gap-2 flex-wrap">
+                  {postImages.map((img, idx) => (
+                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-700">
+                      <img src={img} alt="preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => setPostImages(prev => prev.filter((_, i) => i !== idx))}
+                        className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button type="submit" disabled={isSubmittingPost}
+                className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
+                {isSubmittingPost ? 'পোস্ট হচ্ছে...' : 'পোস্ট পাবলিশ করুন'}
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* TEACHER OR CI ADD MODAL */}
-      {showManageTeacherModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-slate-900">শিক্ষক বা CI স্যার যুক্ত করুন</h3>
-              <button onClick={() => setShowManageTeacherModal(false)} className="cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleAddTeacherOrCi} className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">পদবি / ক্যাটাগরি</label>
-                <select value={teacherRoleType} onChange={e => setTeacherRoleType(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white font-medium">
-                  <option value="teacher">Faculty / Teacher (স্যার)</option>
-                  <option value="ci_sir">Chief Instructor (CI Sir)</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">আইডি / ইউজারনেম *</label>
-                <input type="text" required value={teacherId} onChange={e => setTeacherId(e.target.value)} placeholder="যেমন: teacher_rahim"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">স্যারের নাম *</label>
-                <input type="text" required value={teacherName} onChange={e => setTeacherName(e.target.value)} placeholder="যেমন: Md Rahim Sir"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">অফিশিয়াল জিমেইল *</label>
-                <input type="email" required value={teacherEmail} onChange={e => setTeacherEmail(e.target.value)} placeholder="teacher@gmail.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <button type="submit" className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs cursor-pointer">
-                স্যার / CI যুক্ত করুন
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showManageMods && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-slate-900">মডারেটর / মেন্টর ম্যানেজ করুন</h3>
-              <button onClick={() => setShowManageMods(false)} className="cursor-pointer"><X className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleAddModerator} className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">রোল দিন</label>
-                <input type="text" required value={modInputRoll} onChange={e => setModInputRoll(e.target.value)} placeholder="যেমন: 201605"
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
-              </div>
-              <button type="submit" className="w-full py-2.5 rounded-xl bg-rose-600 text-white font-bold text-xs cursor-pointer">
-                মডারেটর হিসেবে নিয়োগ দিন
-              </button>
-            </form>
-            <div className="pt-2 border-t">
-              <span className="text-xs font-bold text-slate-700 block mb-2">বর্তমান মডারেটরগণ:</span>
-              <div className="space-y-1.5 max-h-36 overflow-y-auto">
-                {moderatorRolls.map(r => (
-                  <div key={r} className="flex items-center justify-between bg-slate-50 p-2 rounded-xl text-xs">
-                    <span>{membersDirectory[r]?.name || r} ({r})</span>
-                    <button onClick={() => handleRemoveModerator(r)} className="text-rose-600 font-bold hover:underline cursor-pointer">বাদ দিন</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ADMIN PIN MODAL */}
-      {showAdminPinModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2">
-                <Lock className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-base text-slate-900">অ্যাডমিন মোড পিন দিন</h3>
-              <p className="text-xs text-slate-500 mt-1">সিক্রেট পিন দিয়ে অ্যাডমিন অ্যাক্সেস টগল করুন। (পিন: 253203)</p>
-            </div>
-            <form onSubmit={handleVerifyAdminPinModal} className="space-y-3">
-              <input type="password" maxLength="6" autoFocus required value={adminInputPin} onChange={e => setAdminInputPin(e.target.value)} placeholder="••••••"
-                className="w-full px-4 py-3 rounded-xl border text-center text-xl tracking-[0.5em] font-bold outline-none focus:border-indigo-500" />
-              <div className="flex gap-2">
-                <button type="button" onClick={() => { setShowAdminPinModal(false); setAdminInputPin(''); }} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-xs font-bold cursor-pointer">বাতিল</button>
-                <button type="submit" className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold cursor-pointer">ভেরিফাই করুন</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ADD NOTICE MODAL */}
       {showAddNotice && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-base text-slate-900">নতুন নোটিশ প্রকাশ করুন</h3>
-              <button onClick={() => setShowAddNotice(false)} className="p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"><X className="w-5 h-5" /></button>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 my-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">নতুন নোটিশ বা ঘোষণা দিন</h3>
+              <button onClick={() => setShowAddNotice(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5"/>
+              </button>
             </div>
-            <form onSubmit={async e => {
+
+            <form onSubmit={async (e) => {
               e.preventDefault();
-              const title = e.target.ntitle.value.trim();
-              const body = e.target.nbody.value.trim();
-              await addDoc(collection(db, 'helpdesk_notices'), {
-                title,
-                body,
-                images: noticeImages,
-                createdAt: new Date().toISOString()
-              });
-              setShowAddNotice(false);
-              setNoticeImages([]);
-              showToastMsg('নোটিশ এবং ছবি সফলভাবে পাবলিশ হয়েছে!');
-            }} className="space-y-3.5">
+              if (!postTitle.trim() || !postDesc.trim()) return;
+              try {
+                await addDoc(collection(db, 'helpdesk_notices'), {
+                  title: postTitle.trim(),
+                  description: postDesc.trim(),
+                  images: noticeImages,
+                  authorName: userInfo.name,
+                  authorRoll: currentUser.roll,
+                  createdAt: new Date().toISOString()
+                });
+                setPostTitle(''); setPostDesc(''); setNoticeImages([]);
+                setShowAddNotice(false);
+                showToastMsg('নোটিশ পাবলিশ হয়েছে!');
+              } catch (err) {
+                showToastMsg('নোটিশ দিতে সমস্যা হয়েছে', 'error');
+              }
+            }} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">নোটিশের শিরোনাম *</label>
-                <input name="ntitle" required placeholder="যেমন: ৪র্থ সেমিস্টার ল্যাব ফাইনাল..." className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+                <label className="block text-xs font-bold text-slate-300 mb-1">নোটিশ শিরোনাম *</label>
+                <input type="text" required value={postTitle} onChange={e => setPostTitle(e.target.value)} placeholder="যেমন: ৪র্থ সেমিস্টার ল্যাব ক্লাস রুটিন..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">বিস্তারিত বিবরণ *</label>
-                <textarea name="nbody" rows="3" required placeholder="নোটিশের বিস্তারিত..." className="w-full px-3.5 py-2.5 rounded-xl border text-sm" />
+                <label className="block text-xs font-bold text-slate-300 mb-1">বিস্তারিত বিবরণ *</label>
+                <textarea required rows="4" value={postDesc} onChange={e => setPostDesc(e.target.value)} placeholder="নোটিশের বিস্তারিত লিখুন..."
+                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ছবি সংযুক্ত করুন (সর্বোচ্চ ৩টি)</label>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ছবি যুক্ত করুন (সর্বোচ্চ ৩টি)</label>
                 <input type="file" accept="image/*" multiple onChange={handleNoticeImageUpload}
-                  className="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-amber-100 file:text-amber-800 cursor-pointer" />
-                {noticeImages.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    {noticeImages.map((img, idx) => (
-                      <div key={idx} className="relative">
-                        <img src={img} className="h-16 w-full object-cover rounded-lg border" alt="Notice Preview" />
-                        <button type="button" onClick={() => setNoticeImages(noticeImages.filter((_, i) => i !== idx))}
-                          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px]">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer" />
               </div>
-              <button type="submit" className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm cursor-pointer">
+
+              {noticeImages.length > 0 && (
+                <div className="flex gap-2 flex-wrap">
+                  {noticeImages.map((img, idx) => (
+                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-slate-700">
+                      <img src={img} alt="preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => setNoticeImages(prev => prev.filter((_, i) => i !== idx))}
+                        className="absolute top-1 right-1 w-5 h-5 bg-rose-600 text-white rounded-full flex items-center justify-center text-[10px]">
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button type="submit" className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-lg">
                 নোটিশ পাবলিশ করুন
               </button>
             </form>
@@ -1624,107 +1665,188 @@ export default function App() {
         </div>
       )}
 
-      {/* CREATE POST MODAL (Professional Choose File Design) */}
-      {showCreatePost && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b">
-              <h3 className="font-bold text-base text-slate-900">নতুন সমস্যা বা প্রশ্ন পোস্ট করুন</h3>
-              <button onClick={() => setShowCreatePost(false)} className="cursor-pointer"><X className="w-5 h-5" /></button>
+      {showManageDirectory && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">নতুন ছাত্র / মেম্বার যোগ করুন</h3>
+              <button onClick={() => setShowManageDirectory(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
             </div>
-            <form onSubmit={handleCreatePost} className="space-y-4">
+            <form onSubmit={handleAddMemberToDirectory} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">ক্যাটাগরি</label>
-                <select value={postCategory} onChange={e => setPostCategory(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white font-medium">
-                  <option>Coding / Programming</option>
-                  <option>Study & Notes</option>
-                  <option>Tech & Software</option>
-                  <option>General Discussion</option>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ক্লাস রোল *</label>
+                <input type="text" required value={newMemberId} onChange={e => setNewMemberId(e.target.value)} placeholder="যেমন: 201635"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">পূর্ণ নাম *</label>
+                <input type="text" required value={newMemberName} onChange={e => setNewMemberName(e.target.value)} placeholder="Student Name"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">অফিশিয়াল জিমেইল *</label>
+                <input type="email" required value={newMemberEmail} onChange={e => setNewMemberEmail(e.target.value)} placeholder="student@gmail.com"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">সেমিস্টার</label>
+                <input type="text" value={newMemberSem} onChange={e => setNewMemberSem(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs">
+                সেভ করুন
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showManageTeacherModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">শিক্ষক বা চিফ ইনস্ট্রাক্টর যোগ করুন</h3>
+              <button onClick={() => setShowManageTeacherModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+            </div>
+            <form onSubmit={handleAddTeacherOrCi} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ভূমিকা নির্বাচন করুন *</label>
+                <select value={teacherRoleType} onChange={e => setTeacherRoleType(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none">
+                  <option value="teacher">Faculty / Teacher (স্যার)</option>
+                  <option value="ci_sir">Chief Instructor - CI (সিআই স্যার)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">শিরোনাম *</label>
-                <input type="text" required value={postTitle} onChange={e => setPostTitle(e.target.value)} placeholder="পোস্টের শিরোনাম..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none focus:border-indigo-500" />
+                <label className="block text-xs font-bold text-slate-300 mb-1">আইডি / কোড *</label>
+                <input type="text" required value={teacherId} onChange={e => setTeacherId(e.target.value)} placeholder="যেমন: T-01 বা CI-01"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">বিস্তারিত বিবরণ *</label>
-                <textarea rows="4" required value={postDesc} onChange={e => setPostDesc(e.target.value)} placeholder="আপনার সমস্যা বা মতামত বিস্তারিত লিখুন..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border text-sm outline-none focus:border-indigo-500" />
+                <label className="block text-xs font-bold text-slate-300 mb-1">পূর্ণ নাম *</label>
+                <input type="text" required value={teacherName} onChange={e => setTeacherName(e.target.value)} placeholder="Teacher Name"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">ছবি সংযুক্ত করুন (সর্বোচ্চ ৫টি)</label>
-                <label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 rounded-xl cursor-pointer transition">
-                  <ImageIcon className="w-6 h-6 text-indigo-600 mb-1" />
-                  <span className="text-xs font-bold text-indigo-700">ফাইল বা ছবি সিলেক্ট করতে এখানে ক্লিক করুন</span>
-                  <span className="text-[10px] text-slate-400 mt-0.5">PNG, JPG বা JPEG (Max 5 images)</span>
-                  <input type="file" accept="image/*" multiple onChange={handlePostImageUpload} className="hidden" />
-                </label>
-                {postImages.length > 0 && (
-                  <div className="grid grid-cols-5 gap-2 mt-2">
-                    {postImages.map((img, idx) => (
-                      <div key={idx} className="relative">
-                        <img src={img} className="h-16 w-full object-cover rounded-lg border shadow-sm" alt="Preview" />
-                        <button type="button" onClick={() => setPostImages(postImages.filter((_, i) => i !== idx))}
-                          className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px]">×</button>
-                      </div>
-                    ))}
+                <label className="block text-xs font-bold text-slate-300 mb-1">অফিশিয়াল জিমেইল *</label>
+                <input type="email" required value={teacherEmail} onChange={e => setTeacherEmail(e.target.value)} placeholder="teacher@gmail.com"
+                  className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs">
+                সংরক্ষণ করুন
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showManageMods && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">মডারেটর ও মেন্টর ম্যানেজ করুন</h3>
+              <button onClick={() => setShowManageMods(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+            </div>
+            <form onSubmit={handleAddModerator} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">ছাত্রের ক্লাস রোল দিন *</label>
+                <div className="flex gap-2">
+                  <input type="text" required value={modInputRoll} onChange={e => setModInputRoll(e.target.value)} placeholder="যেমন: 201605"
+                    className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 outline-none" />
+                  <button type="submit" className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs">
+                    যুক্ত করুন
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <div className="space-y-2 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto">
+              <p className="text-xs font-bold text-slate-400">বর্তমান মডারেটরগণ:</p>
+              {moderatorRolls.map(roll => {
+                const mem = membersDirectory[roll];
+                return (
+                  <div key={roll} className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 text-xs">
+                    <div>
+                      <p className="font-bold text-white">{mem ? mem.name : 'Unknown'} ({roll})</p>
+                    </div>
+                    {roll !== "201605" && (
+                      <button onClick={() => handleRemoveModerator(roll)} className="text-rose-400 hover:underline font-bold">
+                        বাদ দিন
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="flex justify-end gap-2 pt-2 border-t">
-                <button type="button" onClick={() => setShowCreatePost(false)} className="px-4 py-2 text-xs font-bold text-slate-600 cursor-pointer">বাতিল</button>
-                <button type="submit" className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs cursor-pointer shadow-sm">পাবলিশ করুন</button>
-              </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAdminPinModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-rose-600/20 text-rose-500 flex items-center justify-center mx-auto">
+              <Lock className="w-6 h-6"/>
+            </div>
+            <h3 className="text-base font-bold text-white">অ্যাডমিন সিক্রেট পিন দিন</h3>
+            <form onSubmit={handleVerifyAdminPinModal} className="space-y-3">
+              <input type="password" required maxLength="6" value={adminInputPin} onChange={e => setAdminInputPin(e.target.value)}
+                placeholder="সিক্রেট পিন" className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-center text-sm font-bold text-white outline-none tracking-widest" />
+              <button type="submit" className="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow-lg">
+                যাচাই করুন
+              </button>
             </form>
           </div>
         </div>
       )}
 
       {showProfileModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl space-y-3">
-            <h3 className="font-bold text-lg">{userInfo?.name}</h3>
-            <p className="text-xs text-slate-500">Roll: {currentUser.roll}</p>
-            <p className="text-xs text-indigo-600 font-semibold">{currentUser.email}</p>
-            <button onClick={handleLogout} className="w-full py-2.5 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs cursor-pointer">
-              লগআউট করুন
-            </button>
-            <button onClick={() => setShowProfileModal(false)} className="w-full py-2 text-xs text-slate-500 cursor-pointer">বন্ধ করুন</button>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white">আপনার প্রফাইল</h3>
+              <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+            </div>
+            <div className="space-y-3 text-xs">
+              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
+                <p className="text-slate-400">নাম:</p>
+                <p className="font-bold text-white text-sm">{userInfo.name}</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
+                <p className="text-slate-400">রোল / আইডি:</p>
+                <p className="font-bold text-white">{currentUser.roll}</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
+                <p className="text-slate-400">অফিশিয়াল জিমেইল:</p>
+                <p className="font-bold text-white">{userInfo.email}</p>
+              </div>
+              <div className="p-3 rounded-2xl bg-slate-800 border border-slate-700 space-y-1">
+                <p className="text-slate-400">সেমিস্টার / রোল:</p>
+                <p className="font-bold text-white">{userInfo.semester}</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {lightboxImg && (
-        <div onClick={() => setLightboxImg(null)} className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 cursor-zoom-out">
-          <img src={lightboxImg} className="max-w-full max-h-[90vh] rounded-xl" alt="Zoom" />
-        </div>
-      )}
-
-      {toast && (
-        <div className={`fixed bottom-5 right-5 z-50 px-4 py-3 rounded-xl shadow-lg text-xs font-bold text-white ${toast.type === 'error' ? 'bg-rose-600' : 'bg-slate-900'}`}>
-          {toast.msg}
+        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setLightboxImg(null)}>
+          <div className="relative max-w-4xl w-full">
+            <button onClick={() => setLightboxImg(null)} className="absolute -top-10 right-0 text-white p-2">
+              <X className="w-8 h-8"/>
+            </button>
+            <img src={lightboxImg} alt="lightbox" className="w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl" />
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function timeAgo(iso) {
-  if (!iso) return 'এইমাত্র';
-  const sec = Math.floor((new Date() - new Date(iso)) / 1000);
-  if (sec < 60) return 'এইমাত্র';
-  const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} মিনিট আগে`;
-  const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} ঘণ্টা আগে`;
-  return `${Math.floor(hr / 24)} দিন আগে`;
-}
-
-function formatTime12h(time24) {
-  if (!time24) return '';
-  const [h, m] = time24.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
+function formatTime12h(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
   const h12 = h % 12 || 12;
-  return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
+  return `${h12}:${m.toString().padStart(2, '0')} ${period}`;
 }
