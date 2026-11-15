@@ -844,7 +844,7 @@ export default function App() {
               <p className="text-xs text-slate-500">আপনার রোল এবং জিমেইল দিয়ে ভেরিফিকেশন কোড নিন।</p>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">ক্লাস রোল / আইডি *</label>
-                <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="যেমন: 253203"
+                <input type="text" required value={authId} onChange={e => setAuthId(e.target.value)} placeholder="যেমন: 250003"
                   className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 focus:border-indigo-500 outline-none text-sm" />
               </div>
               <div>
