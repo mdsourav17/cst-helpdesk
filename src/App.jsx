@@ -644,15 +644,16 @@ export default function App() {
     e.target.value = '';
   };
 
+  // কমেন্টে সর্বোচ্চ ৫টি ছবি আপলোড করার ফাংশন
   const handleCommentImageUpload = async (e, postId) => {
     const files = Array.from(e.target.files);
     const existing = commentImagesMap[postId] || [];
-    if (files.length + existing.length > 2) {
-      showToastMsg('কমেন্টে সর্বোচ্চ ২টি ছবি দেওয়া যাবে!', 'error');
+    if (files.length + existing.length > 5) {
+      showToastMsg('কমেন্টে সর্বোচ্চ ৫টি ছবি দেওয়া যাবে!', 'error');
       return;
     }
     const compressed = await Promise.all(files.map(f => compressImageFile(f)));
-    setCommentImagesMap(prev => ({ ...prev, [postId]: [...existing, ...compressed].slice(0, 2) }));
+    setCommentImagesMap(prev => ({ ...prev, [postId]: [...existing, ...compressed].slice(0, 5) }));
     e.target.value = '';
   };
 
@@ -833,18 +834,18 @@ export default function App() {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 sm:p-6" style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
-        <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl">
+      <div className="min-h-screen w-full overflow-x-hidden bg-slate-900 flex items-center justify-center p-4 sm:p-6" style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
+        <div className="bg-white rounded-3xl max-w-md w-full p-5 sm:p-8 shadow-2xl">
           <div className="text-center mb-6">
             <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-3 shadow-lg">
               <ShieldCheck className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">CST Help Desk</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900">CST Help Desk</h1>
             <p className="text-xs text-slate-500 mt-1">রোল ও সিক্রেট পিন প্রোটেক্টেড পোর্টাল</p>
           </div>
 
-          {authError && <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">{authError}</div>}
-          {authSuccessMsg && <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium">{authSuccessMsg}</div>}
+          {authError && <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium break-words">{authError}</div>}
+          {authSuccessMsg && <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium break-words">{authSuccessMsg}</div>}
 
           {authStep === 'verifyRoll' && (
             <form onSubmit={handleVerifyRoll} className="space-y-4">
@@ -861,7 +862,7 @@ export default function App() {
 
           {authStep === 'createPin' && (
             <form onSubmit={handleCreatePin} className="space-y-4">
-              <p className="text-xs text-slate-600 bg-indigo-50 p-3 rounded-xl">স্বাগতম <b>{pendingUser?.name}</b>! প্রথমবার অ্যাকাউন্ট সেটআপ করার জন্য আপনার জিমেইল এবং নতুন পিন দিন।</p>
+              <p className="text-xs text-slate-600 bg-indigo-50 p-3 rounded-xl leading-relaxed">স্বাগতম <b>{pendingUser?.name}</b>! প্রথমবার অ্যাকাউন্ট সেটআপ করার জন্য আপনার জিমেইল এবং নতুন পিন দিন।</p>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">আপনার জিমেইল *</label>
                 <input type="email" required value={authEmail} onChange={(e) => setAuthEmail(e.target.value)} placeholder="your-email@gmail.com" className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" />
@@ -881,7 +882,7 @@ export default function App() {
 
           {authStep === 'loginPin' && (
             <form onSubmit={handleLoginPin} className="space-y-4">
-              <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl">ফিরে আসার জন্য স্বাগতম, <b>{pendingUser?.name}</b>! আপনার জিমেইল এবং পিন দিন।</p>
+              <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl leading-relaxed">ফিরে আসার জন্য স্বাগতম, <b>{pendingUser?.name}</b>! আপনার জিমেইল এবং পিন দিন।</p>
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">আপনার রেজিস্টার্ড জিমেইল *</label>
                 <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="your-email@gmail.com" className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm" />
@@ -927,59 +928,59 @@ export default function App() {
   }
 
   return (
-    <div className={`min-h-screen pb-16 transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'}`} style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
+    <div className={`min-h-screen w-full max-w-full overflow-x-hidden pb-20 transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-100 text-slate-900'}`} style={{ fontFamily: "'Inter', 'Hind Siliguri', sans-serif" }}>
       {toast && (
-        <div className={`fixed top-5 right-5 z-50 border px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-medium ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
-          {toast.type === 'error' ? <X className="w-4 h-4 text-rose-500" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-          <span>{toast.msg}</span>
+        <div className={`fixed top-4 left-4 right-4 sm:left-auto sm:right-5 sm:max-w-sm z-50 border px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-medium ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+          {toast.type === 'error' ? <X className="w-4 h-4 text-rose-500 shrink-0" /> : <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+          <span className="break-words">{toast.msg}</span>
         </div>
       )}
 
-      {/* Header */}
-      <header className={`sticky top-0 z-40 backdrop-blur-md border-b ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer select-none" onClick={handleSecretTap}>
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg">
-              <GraduationCap className="w-6 h-6" />
+      {/* Header - Fully Responsive */}
+      <header className={`sticky top-0 z-40 w-full backdrop-blur-md border-b ${isDarkMode ? 'bg-slate-900/95 border-slate-800' : 'bg-white/95 border-slate-200'}`}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 cursor-pointer select-none min-w-0" onClick={handleSecretTap}>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shrink-0">
+              <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>CST Help Desk</h1>
-                {isMainAdmin && <span className="bg-rose-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">Admin</span>}
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <h1 className={`text-sm sm:text-base font-bold truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>CST Help Desk</h1>
+                {isMainAdmin && <span className="bg-rose-600 text-white text-[9px] sm:text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">Admin</span>}
               </div>
-              <p className={`text-[11px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Department Portal</p>
+              <p className={`text-[10px] sm:text-[11px] truncate ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Department Portal</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button onClick={toggleTheme} className={`p-2 sm:p-2.5 rounded-xl border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400' : 'bg-slate-200 border-slate-300 text-indigo-600'}`}>
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <button onClick={toggleTheme} className={`p-2 rounded-xl border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400' : 'bg-slate-200 border-slate-300 text-indigo-600'}`} title="থিম পরিবর্তন">
+              {isDarkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
 
             <div className="relative">
-              <button onClick={() => setShowNotifDropdown(!showNotifDropdown)} className={`relative p-2 sm:p-2.5 rounded-xl border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-200 border-slate-300 text-slate-700'}`}>
-                <Bell className="w-5 h-5" />
+              <button onClick={() => setShowNotifDropdown(!showNotifDropdown)} className={`relative p-2 rounded-xl border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-200 border-slate-300 text-slate-700'}`} title="নোটিফিকেশন">
+                <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
                 {notifications.filter(n => !n.read).length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  <span className="absolute -top-1 -right-1 bg-rose-600 text-white text-[9px] w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center font-bold">
                     {notifications.filter(n => !n.read).length}
                   </span>
                 )}
               </button>
 
               {showNotifDropdown && (
-                <div className={`absolute right-0 mt-2 w-80 max-w-[90vw] border rounded-2xl shadow-2xl z-50 overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
-                  <div className="p-3 border-b flex justify-between items-center text-xs font-bold">
+                <div className={`fixed sm:absolute right-3 sm:right-0 left-3 sm:left-auto mt-2 sm:w-80 border rounded-2xl shadow-2xl z-50 overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+                  <div className="p-3 border-b border-slate-800 flex justify-between items-center text-xs font-bold">
                     <span>নোটিফিকেশন</span>
                     <button onClick={() => setShowNotifDropdown(false)}><X className="w-4 h-4" /></button>
                   </div>
-                  <div className="max-h-80 overflow-y-auto divide-y divide-slate-800">
+                  <div className="max-h-72 overflow-y-auto divide-y divide-slate-800">
                     {notifications.length === 0 ? (
                       <div className="p-6 text-center text-xs text-slate-500">কোনো নোটিফিকেশন নেই</div>
                     ) : (
                       notifications.map(n => (
                         <div key={n.id} onClick={() => updateDoc(doc(db, 'helpdesk_notifications', n.id), { read: true })} className="p-3 text-xs flex items-start gap-2 cursor-pointer">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                          <p>{n.text}</p>
+                          <p className="break-words">{n.text}</p>
                         </div>
                       ))
                     )}
@@ -988,62 +989,62 @@ export default function App() {
               )}
             </div>
 
-            <button onClick={() => setShowProfileModal(true)} className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-200 border-slate-300 text-slate-800'}`}>
-              <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">{userInfo?.name?.charAt(0) || 'U'}</div>
-              <span className="hidden md:inline">{userInfo?.name}</span>
+            <button onClick={() => setShowProfileModal(true)} className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-200 border-slate-300 text-slate-800'}`}>
+              <div className="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">{userInfo?.name?.charAt(0) || 'U'}</div>
+              <span className="hidden md:inline max-w-[100px] truncate">{userInfo?.name}</span>
             </button>
 
-            <button onClick={handleLogout} className="p-2 sm:p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400" title="লগআউট">
-              <LogOut className="w-5 h-5" />
+            <button onClick={handleLogout} className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400" title="লগআউট">
+              <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="max-w-7xl mx-auto px-4 flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none">
-          <button onClick={() => setActiveTab('feed')} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${activeTab === 'feed' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
-            <MessageSquare className="w-4 h-4" /> কোডিং ফিড & হেল্প
+        {/* Navigation Tabs - Responsive Scrollable */}
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 flex gap-1.5 sm:gap-2 overflow-x-auto pb-2.5 pt-1 scrollbar-none">
+          <button onClick={() => setActiveTab('feed')} className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 ${activeTab === 'feed' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
+            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> কোডিং ফিড
           </button>
-          <button onClick={() => setActiveTab('class_routine')} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${activeTab === 'class_routine' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
-            <Calendar className="w-4 h-4" /> ক্লাস রুটিন (1st-8th)
+          <button onClick={() => setActiveTab('class_routine')} className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 ${activeTab === 'class_routine' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
+            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> ক্লাস রুটিন
           </button>
-          <button onClick={() => setActiveTab('notice')} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${activeTab === 'notice' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
-            <Megaphone className="w-4 h-4" /> নোটিশ বোর্ড
+          <button onClick={() => setActiveTab('notice')} className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 ${activeTab === 'notice' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
+            <Megaphone className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> নোটিশ বোর্ড
           </button>
-          <button onClick={() => setActiveTab('support')} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${activeTab === 'support' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
-            <Radio className="w-4 h-4" /> লাইভ সাপোর্ট {liveStatus.isLive && <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>}
+          <button onClick={() => setActiveTab('support')} className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 ${activeTab === 'support' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
+            <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> লাইভ সাপোর্ট {liveStatus.isLive && <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>}
           </button>
-          <button onClick={() => setActiveTab('directory')} className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${activeTab === 'directory' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
-            <Users className="w-4 h-4" /> ডিপার্টমেন্টাল ডিরেক্টরি
+          <button onClick={() => setActiveTab('directory')} className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold whitespace-nowrap shrink-0 ${activeTab === 'directory' ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-200 text-slate-700')}`}>
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> ডিরেক্টরি
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
 
         {/* --- TAB 1: FEED --- */}
         {activeTab === 'feed' && (
-          <div className="space-y-6">
-            <div className={`border p-4 rounded-2xl flex flex-col md:flex-row gap-3 items-center justify-between ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+          <div className="space-y-4 sm:space-y-6">
+            <div className={`border p-3.5 sm:p-4 rounded-2xl flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div className="relative w-full md:w-80">
                 <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                 <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="কোডিং সমস্যা বা পোস্ট খুঁজুন..." className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'}`} />
               </div>
 
-              <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
-                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={`border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}>
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full md:w-auto items-center">
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={`w-full sm:w-auto border px-2.5 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}>
                   <option value="ALL">সকল স্ট্যাটাস</option>
                   <option value="open">Open (চলমান)</option>
                   <option value="solved">Solved (সমাধানকৃত)</option>
                 </select>
-                <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={`border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}>
+                <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={`w-full sm:w-auto border px-2.5 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'}`}>
                   <option value="ALL">সকল ক্যাটাগরি</option>
                   <option value="Coding / Programming">Coding / Programming</option>
                   <option value="Lab Practical">Lab Practical</option>
                   <option value="Academic Question">Academic Question</option>
                 </select>
-                <button onClick={() => setShowCreatePost(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg ml-auto">
+                <button onClick={() => setShowCreatePost(true)} className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-lg">
                   <Plus className="w-4 h-4" /> প্রশ্ন করুন
                 </button>
               </div>
@@ -1051,22 +1052,22 @@ export default function App() {
 
             <div className="space-y-4">
               {filteredPosts.map(post => (
-                <div key={post.id} className={`border rounded-2xl p-5 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">{post.authorName.charAt(0)}</div>
-                      <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-xs font-bold">{post.authorName}</span>
+                <div key={post.id} className={`border rounded-2xl p-4 sm:p-5 space-y-3.5 sm:space-y-4 overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="flex items-start sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shrink-0">{post.authorName.charAt(0)}</div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs font-bold truncate">{post.authorName}</span>
                           <span className="text-[10px] text-slate-400">রোল: {post.authorRoll}</span>
                           {renderRoleBadge(post.authorRoll, post.authorRole)}
                         </div>
-                        <span className="text-[10px] text-slate-500">{new Date(post.createdAt).toLocaleDateString('bn-BD')}</span>
+                        <span className="text-[10px] text-slate-500 block mt-0.5">{new Date(post.createdAt).toLocaleDateString('bn-BD')}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold ${post.status === 'solved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[10px] font-bold ${post.status === 'solved' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
                         {post.status === 'solved' ? 'Solved' : 'Open'}
                       </span>
                       {(hasStaffPower || currentUser.roll === post.authorRoll) && (
@@ -1078,39 +1079,40 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <span className="inline-block px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 text-[10px] font-bold mb-2">{post.category}</span>
-                    <h2 className="text-sm font-bold mb-1">{post.title}</h2>
-                    <p className="text-xs leading-relaxed whitespace-pre-wrap opacity-90">{post.description}</p>
+                    <h2 className="text-sm sm:text-base font-bold mb-1 break-words">{post.title}</h2>
+                    <p className="text-xs leading-relaxed whitespace-pre-wrap break-words opacity-90">{post.description}</p>
                   </div>
 
                   {post.images?.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {post.images.map((img, idx) => (
-                        <img key={idx} src={img} alt="post" onClick={() => setLightboxImg(img)} className="w-full h-40 object-cover rounded-xl cursor-pointer hover:opacity-95 transition-all" />
+                        <img key={idx} src={img} alt="post" onClick={() => setLightboxImg(img)} className="w-full h-32 sm:h-40 object-cover rounded-xl cursor-pointer hover:opacity-95 transition-all" />
                       ))}
                     </div>
                   )}
 
-                  {/* Comments Section */}
+                  {/* Comments Section - Responsive Grid for up to 5 images */}
                   <div className="pt-3 border-t border-slate-800 space-y-3">
                     <h3 className="text-xs font-bold text-slate-400">কমেন্টস ({post.comments?.length || 0})</h3>
                     {(post.comments || []).map(comm => (
-                      <div key={comm.id} className={`p-3 rounded-xl border space-y-2 ${isDarkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold">{comm.authorName}</span>
+                      <div key={comm.id} className={`p-3 rounded-xl border space-y-2 overflow-hidden ${isDarkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                            <span className="text-xs font-bold truncate">{comm.authorName}</span>
                             <span className="text-[10px] text-slate-400">রোল: {comm.authorRoll}</span>
                             {renderRoleBadge(comm.authorRoll, comm.authorRole)}
                           </div>
-                          <span className="text-[10px] text-slate-500">{new Date(comm.createdAt).toLocaleDateString('bn-BD')}</span>
+                          <span className="text-[10px] text-slate-500 shrink-0">{new Date(comm.createdAt).toLocaleDateString('bn-BD')}</span>
                         </div>
-                        <p className="text-xs leading-relaxed">{comm.text}</p>
+                        {comm.text && <p className="text-xs leading-relaxed break-words">{comm.text}</p>}
                         
+                        {/* কমেন্টের ছবির রেসপন্সিভ গ্রিড (সর্বোচ্চ ৫টি ছবি সুন্দরভাবে সাজানো থাকবে) */}
                         {comm.images?.length > 0 && (
-                          <div className="flex gap-2 pt-1">
+                          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 pt-1">
                             {comm.images.map((cImg, cIdx) => (
-                              <img key={cIdx} src={cImg} alt="comment-img" onClick={() => setLightboxImg(cImg)} className="w-24 h-24 object-cover rounded-lg cursor-pointer border border-slate-700" />
+                              <img key={cIdx} src={cImg} alt="comment-img" onClick={() => setLightboxImg(cImg)} className="w-full h-20 sm:h-24 object-cover rounded-lg cursor-pointer border border-slate-700 hover:opacity-90 transition-all" />
                             ))}
                           </div>
                         )}
@@ -1124,18 +1126,18 @@ export default function App() {
                           </button>
                         </div>
                         {comm.replies?.map(rep => (
-                          <div key={rep.id} className="pl-4 border-l-2 border-indigo-500/30 text-xs mt-1 space-y-0.5">
-                            <div className="flex items-center gap-2">
+                          <div key={rep.id} className="pl-3 sm:pl-4 border-l-2 border-indigo-500/30 text-xs mt-1 space-y-0.5 break-words">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <b>{rep.authorName}:</b>
                               {renderRoleBadge(rep.authorRoll, rep.authorRole)}
                             </div>
-                            <p>{rep.text}</p>
+                            <p className="break-words">{rep.text}</p>
                           </div>
                         ))}
                         {activeReplyBox === comm.id && (
-                          <form onSubmit={(e) => handleAddReply(e, post, comm.id)} className="flex gap-2 pt-2">
-                            <input type="text" value={replyTexts[comm.id] || ''} onChange={(e) => setReplyTexts(prev => ({ ...prev, [comm.id]: e.target.value }))} placeholder="রিপ্লাই লিখুন..." className="flex-1 border px-3 py-1.5 rounded-lg text-xs bg-slate-900 border-slate-700 text-white" />
-                            <button type="submit" className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">দিন</button>
+                          <form onSubmit={(e) => handleAddReply(e, post, comm.id)} className="flex gap-1.5 sm:gap-2 pt-2">
+                            <input type="text" value={replyTexts[comm.id] || ''} onChange={(e) => setReplyTexts(prev => ({ ...prev, [comm.id]: e.target.value }))} placeholder="রিপ্লাই লিখুন..." className="flex-1 min-w-0 border px-3 py-1.5 rounded-lg text-xs bg-slate-900 border-slate-700 text-white" />
+                            <button type="submit" className="bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shrink-0">দিন</button>
                           </form>
                         )}
                       </div>
@@ -1143,22 +1145,22 @@ export default function App() {
 
                     <form onSubmit={(e) => handleAddComment(e, post)} className="space-y-2 pt-1">
                       {commentImagesMap[post.id]?.length > 0 && (
-                        <div className="flex gap-2 p-2 rounded-xl bg-slate-900/50 border border-slate-800">
+                        <div className="flex flex-wrap gap-2 p-2 rounded-xl bg-slate-900/50 border border-slate-800">
                           {commentImagesMap[post.id].map((imgPrv, iKey) => (
-                            <div key={iKey} className="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-700">
+                            <div key={iKey} className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden border border-slate-700">
                               <img src={imgPrv} alt="preview" className="w-full h-full object-cover" />
                               <button type="button" onClick={() => setCommentImagesMap(prev => ({ ...prev, [post.id]: prev[post.id].filter((_, idx) => idx !== iKey) }))} className="absolute top-0.5 right-0.5 bg-rose-600 text-white rounded-full p-0.5"><X className="w-3 h-3" /></button>
                             </div>
                           ))}
                         </div>
                       )}
-                      <div className="flex gap-2 items-center">
-                        <label className={`p-2.5 rounded-xl border cursor-pointer transition-all ${isDarkMode ? 'bg-slate-950 border-slate-800 text-indigo-400 hover:bg-slate-800' : 'bg-slate-50 border-slate-300 text-indigo-600 hover:bg-slate-100'}`} title="ছবি বা স্ক্রিনশট দিন">
+                      <div className="flex gap-1.5 sm:gap-2 items-center">
+                        <label className={`p-2.5 rounded-xl border cursor-pointer transition-all shrink-0 ${isDarkMode ? 'bg-slate-950 border-slate-800 text-indigo-400 hover:bg-slate-800' : 'bg-slate-50 border-slate-300 text-indigo-600 hover:bg-slate-100'}`} title="সর্বোচ্চ ৫টি ছবি দিন">
                           <ImageIcon className="w-4 h-4" />
-                          <input type="file" accept="image/*" onChange={(e) => handleCommentImageUpload(e, post.id)} className="hidden" />
+                          <input type="file" multiple accept="image/*" onChange={(e) => handleCommentImageUpload(e, post.id)} className="hidden" />
                         </label>
-                        <input type="text" value={commentTexts[post.id] || ''} onChange={(e) => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))} placeholder="একটি সমাধান বা কমেন্ট লিখুন..." className={`flex-1 border px-3.5 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
-                        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow">কমেন্ট</button>
+                        <input type="text" value={commentTexts[post.id] || ''} onChange={(e) => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))} placeholder="সমাধান লিখুন (সর্বোচ্চ ৫টি ছবি)..." className={`flex-1 min-w-0 border px-3 py-2.5 rounded-xl text-xs ${isDarkMode ? 'bg-slate-950 border-slate-800 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
+                        <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-bold shadow shrink-0">কমেন্ট</button>
                       </div>
                     </form>
                   </div>
@@ -1170,31 +1172,31 @@ export default function App() {
 
         {/* --- TAB 2: CLASS ROUTINE --- */}
         {activeTab === 'class_routine' && (
-          <div className="space-y-6">
-            <div className={`border p-5 rounded-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+          <div className="space-y-4 sm:space-y-6">
+            <div className={`border p-4 sm:p-5 rounded-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div>
-                <h2 className="text-lg font-bold">সেমিস্টারভিত্তিক ক্লাস ও ল্যাব রুটিন</h2>
+                <h2 className="text-base sm:text-lg font-bold">সেমিস্টারভিত্তিক ক্লাস ও ল্যাব রুটিন</h2>
                 <p className="text-xs text-slate-400">১ম থেকে ৮ম সেমিস্টারের ক্লাস, ল্যাব, সময় ও রুম নম্বর দেখুন</p>
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none">
                 {CLASS_SEMESTERS.map(sem => (
                   <button
                     key={sem}
                     onClick={() => setSelectedRoutineSem(sem)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${selectedRoutineSem === sem ? 'bg-indigo-600 text-white shadow-md' : (isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}`}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 transition-all ${selectedRoutineSem === sem ? 'bg-indigo-600 text-white shadow-md' : (isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200')}`}
                   >
                     {sem}
                   </button>
                 ))}
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pt-1 scrollbar-none">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pt-1 scrollbar-none">
                 {["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"].map(day => (
                   <button
                     key={day}
                     onClick={() => setSelectedRoutineDay(day)}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap border transition-all ${selectedRoutineDay === day ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : (isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-600')}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 border transition-all ${selectedRoutineDay === day ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' : (isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-600')}`}
                   >
                     {DAYS_BN[day]}
                   </button>
@@ -1203,7 +1205,7 @@ export default function App() {
             </div>
 
             {hasStaffPower && (
-              <form onSubmit={handleAddClassRoutine} className={`border p-5 rounded-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <form onSubmit={handleAddClassRoutine} className={`border p-4 sm:p-5 rounded-2xl space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
                   + নতুন শিডিউল যুক্ত করুন ({selectedRoutineSem} - {DAYS_BN[selectedRoutineDay]})
                 </h3>
@@ -1241,33 +1243,33 @@ export default function App() {
                     <option value="Lab Practical">Lab Practical (ল্যাব)</option>
                   </select>
                 </div>
-                <button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg">
+                <button type="submit" className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-lg">
                   রুটিনে সেভ করুন
                 </button>
               </form>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {classRoutines
                 .filter(r => r.semester === selectedRoutineSem && r.day === selectedRoutineDay)
                 .map(item => (
-                  <div key={item.id} className={`border rounded-2xl p-4 flex items-center justify-between relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div key={item.id} className={`border rounded-2xl p-4 flex items-center justify-between gap-2 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                     <div className={`absolute top-0 left-0 w-1.5 h-full ${item.type === 'Lab Practical' ? 'bg-amber-500' : 'bg-indigo-600'}`}></div>
-                    <div className="space-y-1.5 pl-2">
-                      <div className="flex items-center gap-2">
+                    <div className="space-y-1.5 pl-2 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'Lab Practical' ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-400'}`}>
                           {item.type}
                         </span>
                         <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" /> {item.time}
+                          <Clock className="w-3.5 h-3.5 shrink-0" /> {item.time}
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold">{item.subject}</h4>
+                      <h4 className="text-sm font-bold break-words">{item.subject}</h4>
                       <p className="text-xs text-slate-400">📍 রুম / ল্যাব: <b className={isDarkMode ? 'text-slate-200' : 'text-slate-800'}>{item.room}</b></p>
                     </div>
 
                     {hasStaffPower && (
-                      <button onClick={() => handleDeleteClassRoutine(item.id)} className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400" title="ডিলিট করুন">
+                      <button onClick={() => handleDeleteClassRoutine(item.id)} className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 shrink-0" title="ডিলিট করুন">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
@@ -1275,7 +1277,7 @@ export default function App() {
                 ))}
 
               {classRoutines.filter(r => r.semester === selectedRoutineSem && r.day === selectedRoutineDay).length === 0 && (
-                <div className={`col-span-full border rounded-2xl p-10 text-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
+                <div className={`col-span-full border rounded-2xl p-8 sm:p-10 text-center text-xs ${isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
                   {selectedRoutineSem}-এর {DAYS_BN[selectedRoutineDay]} কোনো ক্লাস বা ল্যাব শিডিউল যুক্ত করা হয়নি।
                 </div>
               )}
@@ -1285,14 +1287,14 @@ export default function App() {
 
         {/* --- TAB 3: NOTICE BOARD --- */}
         {activeTab === 'notice' && (
-          <div className="space-y-6">
-            <div className={`border p-4 rounded-2xl flex justify-between items-center ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+          <div className="space-y-4 sm:space-y-6">
+            <div className={`border p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div>
                 <h2 className="text-base font-bold">ডিপার্টমেন্টাল নোটিশ বোর্ড</h2>
                 <p className="text-xs text-slate-400">অফিশিয়াল নোটিশ ও ঘোষণা</p>
               </div>
               {hasStaffPower && (
-                <button onClick={() => setShowAddNotice(true)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
+                <button onClick={() => setShowAddNotice(true)} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
                   <Plus className="w-4 h-4" /> নতুন নোটিশ
                 </button>
               )}
@@ -1300,14 +1302,14 @@ export default function App() {
 
             <div className="space-y-4">
               {notices.map(n => (
-                <div key={n.id} className={`border rounded-2xl p-6 space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div key={n.id} className={`border rounded-2xl p-4 sm:p-6 space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="absolute top-0 left-0 w-1.5 h-full bg-indigo-600"></div>
-                  <div className="flex justify-between items-start">
-                    <div>
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
                       <span className="text-[10px] text-indigo-400 font-bold uppercase">{n.authorRole}</span>
-                      <h2 className="text-base font-bold mt-0.5">{n.title}</h2>
+                      <h2 className="text-sm sm:text-base font-bold mt-0.5 break-words">{n.title}</h2>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-[11px] text-slate-400">{new Date(n.createdAt).toLocaleDateString('bn-BD')}</span>
                       {hasStaffPower && (
                         <button onClick={() => window.confirm('নোটিশ ডিলিট করতে চান?') && deleteDoc(doc(db, 'helpdesk_notices', n.id))} className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400">
@@ -1316,12 +1318,12 @@ export default function App() {
                       )}
                     </div>
                   </div>
-                  <p className="text-xs leading-relaxed whitespace-pre-wrap opacity-90">{n.description}</p>
+                  <p className="text-xs leading-relaxed whitespace-pre-wrap break-words opacity-90">{n.description}</p>
                   
                   {n.images?.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2">
                       {n.images.map((nImg, niKey) => (
-                        <img key={niKey} src={nImg} alt="notice-img" onClick={() => setLightboxImg(nImg)} className="w-full h-36 object-cover rounded-xl cursor-pointer border border-slate-700" />
+                        <img key={niKey} src={nImg} alt="notice-img" onClick={() => setLightboxImg(nImg)} className="w-full h-32 sm:h-36 object-cover rounded-xl cursor-pointer border border-slate-700" />
                       ))}
                     </div>
                   )}
@@ -1333,34 +1335,33 @@ export default function App() {
 
         {/* --- TAB 4: LIVE SUPPORT & ROUTINE --- */}
         {activeTab === 'support' && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {liveStatus.isLive ? (
-              <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-500/30 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 border border-indigo-500/30 rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                   <span className="text-xs font-bold text-emerald-400 uppercase">লাইভ সাপোর্ট সেশন চালু আছে</span>
-                  <h2 className="text-lg font-bold text-white">{liveStatus.sessionTitle}</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-white">{liveStatus.sessionTitle}</h2>
                   <p className="text-xs text-slate-400">সময়: {liveStatus.timeRange}</p>
                 </div>
                 {(supportQueue.some(q => q.roll === currentUser.roll) || hasStaffPower) ? (
-                  <a href={supportConfig.meetLink || "https://meet.google.com"} target="_blank" rel="noreferrer" className="flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg">
+                  <a href={supportConfig.meetLink || "https://meet.google.com"} target="_blank" rel="noreferrer" className="w-full md:w-auto flex items-center justify-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg">
                     <Video className="w-5 h-5" /> গুগল মিট জয়েন করুন <ExternalLink className="w-4 h-4" />
                   </a>
                 ) : (
-                  <span className="text-xs text-amber-400 font-semibold flex items-center gap-1"><Lock className="w-4 h-4" /> আগে নিচে সিরিয়াল ফর্ম পূরণ করুন</span>
+                  <span className="text-xs text-amber-400 font-semibold flex items-center gap-1"><Lock className="w-4 h-4 shrink-0" /> আগে নিচে সিরিয়াল ফর্ম পূরণ করুন</span>
                 )}
               </div>
             ) : (
-              <div className={`border rounded-2xl p-6 text-center space-y-2 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <div className={`border rounded-2xl p-5 sm:p-6 text-center space-y-2 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <Radio className="w-8 h-8 text-slate-400 mx-auto animate-pulse" />
-                <h2 className="text-base font-bold">বর্তমানে লাইভ সাপোর্ট সেশন চলছে না</h2>
+                <h2 className="text-sm sm:text-base font-bold">বর্তমানে লাইভ সাপোর্ট সেশন চলছে না</h2>
                 <p className="text-xs text-slate-400">নিচে সাপ্তাহিক রুটিন দেখে নির্ধারিত সময়ে জয়েন করুন অথবা সেশন চালু হলে সিরিয়ালে নাম দিতে পারবেন।</p>
               </div>
             )}
 
-            {/* Support Queue Form - Only show when live status is active */}
             {liveStatus.isLive && (
-              <div className={`border rounded-2xl p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <h2 className="text-base font-bold flex items-center gap-2">
+              <div className={`border rounded-2xl p-4 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <h2 className="text-sm sm:text-base font-bold flex items-center gap-2">
                   <Clock className="w-4 h-4 text-indigo-500" /> সাপোর্ট সিরিয়ালে নাম লিখুন
                 </h2>
                 <form onSubmit={handleJoinSupportQueue} className="space-y-3">
@@ -1382,34 +1383,32 @@ export default function App() {
               </div>
             )}
 
-            {/* Current Queue */}
-            <div className={`border rounded-2xl p-6 space-y-3 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <h2 className="text-base font-bold">বর্তমান সাপোর্ট সিরিয়াল ({supportQueue.length})</h2>
+            <div className={`border rounded-2xl p-4 sm:p-6 space-y-3 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <h2 className="text-sm sm:text-base font-bold">বর্তমান সাপোর্ট সিরিয়াল ({supportQueue.length})</h2>
               {supportQueue.length === 0 ? (
                 <p className="text-xs text-slate-500 text-center py-4">বর্তমানে সিরিয়ালে কেউ নেই</p>
               ) : (
                 supportQueue.map((q, idx) => (
-                  <div key={q.id} className={`p-4 rounded-xl border flex justify-between items-center ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                    <div>
-                      <span className="text-xs font-bold">#{idx + 1} {q.name} (রোল: {q.roll})</span>
-                      <p className="text-xs opacity-80 mt-1"><b>[{q.topic}]</b> {q.problem}</p>
+                  <div key={q.id} className={`p-3.5 sm:p-4 rounded-xl border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 ${isDarkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold block">#{idx + 1} {q.name} (রোল: {q.roll})</span>
+                      <p className="text-xs opacity-80 mt-1 break-words"><b>[{q.topic}]</b> {q.problem}</p>
                     </div>
                     {hasStaffPower && (
-                      <button onClick={() => handleCompleteStudentSupport(q)} className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold">সম্পন্ন</button>
+                      <button onClick={() => handleCompleteStudentSupport(q)} className="w-full sm:w-auto bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold shrink-0">সম্পন্ন</button>
                     )}
                   </div>
                 ))
               )}
             </div>
 
-            {/* Weekly Support Routine Section */}
-            <div className={`border rounded-2xl p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <h2 className="text-base font-bold">সাপ্তাহিক লাইভ সাপোর্ট রুটিন</h2>
+            <div className={`border rounded-2xl p-4 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+              <h2 className="text-sm sm:text-base font-bold">সাপ্তাহিক লাইভ সাপোর্ট রুটিন</h2>
               <div className="space-y-3">
                 {["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(day => {
                   const daySlots = routineList.filter(r => r.day === day);
                   return (
-                    <div key={day} className={`p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+                    <div key={day} className={`p-3.5 sm:p-4 rounded-2xl border space-y-2 ${isDarkMode ? 'bg-slate-950/60 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-bold text-indigo-400">{DAYS_BN[day]}</span>
                         {hasStaffPower && (
@@ -1420,13 +1419,13 @@ export default function App() {
                         <p className="text-xs text-slate-500 italic">কোনো সেশন নেই</p>
                       ) : (
                         daySlots.map(slot => (
-                          <div key={slot.id} className="flex justify-between items-center text-xs bg-indigo-500/10 p-2.5 rounded-xl">
-                            <div>
-                              <b>{slot.title}</b>
+                          <div key={slot.id} className="flex justify-between items-center text-xs bg-indigo-500/10 p-2.5 rounded-xl gap-2">
+                            <div className="min-w-0">
+                              <b className="block truncate">{slot.title}</b>
                               <p className="text-[11px] text-emerald-400">{formatTime12h(slot.startTime)} - {formatTime12h(slot.endTime)}</p>
                             </div>
                             {hasStaffPower && (
-                              <button onClick={() => handleDeleteSupportRoutineSlot(slot.id)} className="text-rose-400 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                              <button onClick={() => handleDeleteSupportRoutineSlot(slot.id)} className="text-rose-400 p-1 shrink-0"><Trash2 className="w-3.5 h-3.5" /></button>
                             )}
                           </div>
                         ))
@@ -1465,44 +1464,44 @@ export default function App() {
 
         {/* --- TAB 5: DIRECTORY --- */}
         {activeTab === 'directory' && (
-          <div className="space-y-6">
-            <div className={`border p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+          <div className="space-y-4 sm:space-y-6">
+            <div className={`border p-4 sm:p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div>
-                <h2 className="text-lg font-bold">ডিপার্টমেন্টাল ডিরেক্টরি</h2>
+                <h2 className="text-base sm:text-lg font-bold">ডিপার্টমেন্টাল ডিরেক্টরি</h2>
                 <p className="text-xs text-slate-400">সেমিস্টার অনুযায়ী শিক্ষক, সিআই ও ছাত্রছাত্রীবৃন্দ</p>
               </div>
 
               {hasStaffPower && (
-                <div className="flex flex-wrap gap-2">
-                  <button onClick={() => setShowManageDirectory(true)} className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
-                    <UserPlus className="w-4 h-4" /> ছাত্র যোগ করুন
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 w-full md:w-auto">
+                  <button onClick={() => setShowManageDirectory(true)} className="flex items-center justify-center gap-1.5 bg-indigo-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold">
+                    <UserPlus className="w-4 h-4 shrink-0" /> ছাত্র যোগ
                   </button>
-                  <button onClick={() => setShowBulkUploadModal(true)} className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
-                    <FileSpreadsheet className="w-4 h-4" /> বাল্ক আপলোড (Google Form)
+                  <button onClick={() => setShowBulkUploadModal(true)} className="flex items-center justify-center gap-1.5 bg-purple-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold">
+                    <FileSpreadsheet className="w-4 h-4 shrink-0" /> বাল্ক আপলোড
                   </button>
-                  <button onClick={() => setShowManageTeacherModal(true)} className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
-                    <Award className="w-4 h-4" /> শিক্ষক / CI যোগ করুন
+                  <button onClick={() => setShowManageTeacherModal(true)} className="flex items-center justify-center gap-1.5 bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold">
+                    <Award className="w-4 h-4 shrink-0" /> শিক্ষক / CI
                   </button>
-                  <button onClick={() => setShowManageMods(true)} className="flex items-center gap-2 bg-slate-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold">
-                    <ShieldAlert className="w-4 h-4" /> মডারেটর ম্যানেজ
+                  <button onClick={() => setShowManageMods(true)} className="flex items-center justify-center gap-1.5 bg-slate-700 text-white px-3 py-2.5 rounded-xl text-xs font-bold">
+                    <ShieldAlert className="w-4 h-4 shrink-0" /> মডারেটর
                   </button>
                 </div>
               )}
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
               {SEMESTERS_LIST.map(sem => (
                 <button
                   key={sem}
                   onClick={() => setDirectorySemFilter(sem)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${directorySemFilter === sem ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-900 text-slate-300 border border-slate-800' : 'bg-white text-slate-700 border border-slate-200')}`}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 ${directorySemFilter === sem ? 'bg-indigo-600 text-white shadow-lg' : (isDarkMode ? 'bg-slate-900 text-slate-300 border border-slate-800' : 'bg-white text-slate-700 border border-slate-200')}`}
                 >
                   {sem === 'ALL' ? 'সকল মেম্বার' : sem === 'TEACHERS' ? '👨‍🏫 শিক্ষক / CI' : sem}
                 </button>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {Object.entries(membersDirectory)
                 .filter(([_, member]) => {
                   const isTeacherOrCI = member.role === 'teacher' || member.role === 'ci_sir';
@@ -1513,25 +1512,25 @@ export default function App() {
                 .map(([id, member]) => {
                   const isTeacherOrCI = member.role === 'teacher' || member.role === 'ci_sir';
                   return (
-                    <div key={id} className={`border rounded-2xl p-5 space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div key={id} className={`border rounded-2xl p-4 sm:p-5 space-y-3 relative overflow-hidden ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                       <div className={`absolute top-0 left-0 w-1 h-full ${member.role === 'ci_sir' ? 'bg-purple-600' : member.role === 'teacher' ? 'bg-emerald-600' : 'bg-indigo-600'}`}></div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
                             {member.name.charAt(0)}
                           </div>
-                          <div>
-                            <h3 className="text-sm font-bold">{member.name}</h3>
-                            <p className="text-[11px] text-indigo-400 font-semibold">{member.semester} {!isTeacherOrCI && member.role !== 'admin' && `(রোল: ${id})`}</p>
-                            {renderRoleBadge(id, member.role)}
+                          <div className="min-w-0">
+                            <h3 className="text-sm font-bold truncate">{member.name}</h3>
+                            <p className="text-[11px] text-indigo-400 font-semibold truncate">{member.semester} {!isTeacherOrCI && member.role !== 'admin' && `(রোল: ${id})`}</p>
+                            <div className="mt-1">{renderRoleBadge(id, member.role)}</div>
                           </div>
                         </div>
 
                         {hasStaffPower && member.role !== 'admin' && (
                           <button
                             onClick={() => handleDeleteMemberFromDirectory(id, member.name)}
-                            className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all cursor-pointer z-10"
+                            className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all cursor-pointer shrink-0"
                             title="স্থায়ীভাবে ডিলিট করুন"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1541,7 +1540,7 @@ export default function App() {
 
                       {isTeacherOrCI && (
                         <div className={`pt-2 border-t text-xs flex items-center gap-2 ${isDarkMode ? 'border-slate-800 text-slate-300' : 'border-slate-100 text-slate-600'}`}>
-                          <Mail className="w-3.5 h-3.5 text-slate-400" />
+                          <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                           <span className="truncate">{member.email || 'N/A'}</span>
                         </div>
                       )}
@@ -1556,8 +1555,8 @@ export default function App() {
 
       {/* --- MODALS --- */}
       {showCreatePost && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-lg w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">নতুন প্রশ্ন বা পোস্ট</h2>
               <button onClick={() => setShowCreatePost(false)}><X className="w-5 h-5" /></button>
@@ -1593,8 +1592,8 @@ export default function App() {
       )}
 
       {showManageDirectory && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-md w-full p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">নতুন ছাত্র যুক্ত করুন</h2>
               <button onClick={() => setShowManageDirectory(false)}><X className="w-5 h-5" /></button>
@@ -1613,8 +1612,8 @@ export default function App() {
       )}
 
       {showBulkUploadModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-lg w-full p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-lg w-full p-5 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">বাল্ক ছাত্র ডাটা আপলোড (Google Form / CSV)</h2>
               <button onClick={() => setShowBulkUploadModal(false)}><X className="w-5 h-5" /></button>
@@ -1636,8 +1635,8 @@ export default function App() {
       )}
 
       {showManageTeacherModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-md w-full p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">শিক্ষক বা সিআই যুক্ত করুন</h2>
               <button onClick={() => setShowManageTeacherModal(false)}><X className="w-5 h-5" /></button>
@@ -1657,21 +1656,21 @@ export default function App() {
       )}
 
       {showManageMods && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-md w-full p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">মডারেটর ম্যানেজ</h2>
               <button onClick={() => setShowManageMods(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleAddModerator} className="flex gap-2">
-              <input type="text" required value={modInputRoll} onChange={(e) => setModInputRoll(e.target.value)} placeholder="ছাত্রের রোল দিন" className={`flex-1 border px-3 py-2 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
-              <button type="submit" className="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold">যুক্ত করুন</button>
+              <input type="text" required value={modInputRoll} onChange={(e) => setModInputRoll(e.target.value)} placeholder="ছাত্রের রোল দিন" className={`flex-1 min-w-0 border px-3 py-2 rounded-xl text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`} />
+              <button type="submit" className="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold shrink-0">যুক্ত করুন</button>
             </form>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {moderatorRolls.map(roll => (
                 <div key={roll} className="flex justify-between items-center p-2.5 rounded-xl border border-slate-800 text-xs">
-                  <span>{membersDirectory[roll]?.name || roll} ({roll})</span>
-                  <button onClick={() => handleRemoveModerator(roll)} className="text-rose-400"><Trash2 className="w-4 h-4" /></button>
+                  <span className="truncate">{membersDirectory[roll]?.name || roll} ({roll})</span>
+                  <button onClick={() => handleRemoveModerator(roll)} className="text-rose-400 shrink-0"><Trash2 className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>
@@ -1680,8 +1679,8 @@ export default function App() {
       )}
 
       {showAddNotice && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-lg w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">নতুন নোটিশ</h2>
               <button onClick={() => setShowAddNotice(false)}><X className="w-5 h-5" /></button>
@@ -1722,8 +1721,8 @@ export default function App() {
       )}
 
       {showAdminPinModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-sm w-full p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-sm w-full p-5 sm:p-6 space-y-4 ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="flex justify-between items-center">
               <h2 className="text-base font-bold">অ্যাডমিন পিন ভেরিফিকেশন</h2>
               <button onClick={() => setShowAdminPinModal(false)}><X className="w-5 h-5" /></button>
@@ -1737,8 +1736,8 @@ export default function App() {
       )}
 
       {showProfileModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`border rounded-3xl max-w-md w-full p-6 space-y-4 text-center ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className={`border rounded-3xl max-w-md w-full p-5 sm:p-6 space-y-4 text-center ${isDarkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <div className="w-20 h-20 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-3xl font-bold mx-auto">{userInfo?.name?.charAt(0)}</div>
             <div>
               <h2 className="text-lg font-bold">{userInfo?.name}</h2>
@@ -1751,8 +1750,8 @@ export default function App() {
       )}
 
       {lightboxImg && (
-        <div className="fixed inset-0 z-50 bg-slate-950/90 flex items-center justify-center p-4" onClick={() => setLightboxImg(null)}>
-          <img src={lightboxImg} alt="lightbox" className="max-w-full max-h-[90vh] rounded-2xl" />
+        <div className="fixed inset-0 z-50 bg-slate-950/90 flex items-center justify-center p-3 sm:p-4" onClick={() => setLightboxImg(null)}>
+          <img src={lightboxImg} alt="lightbox" className="max-w-full max-h-[88vh] rounded-2xl object-contain" />
         </div>
       )}
     </div>
